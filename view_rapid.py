@@ -6,12 +6,6 @@ from dotenv import load_dotenv
 # (참고: Streamlit Community Cloud에 배포할 땐 .env 대신 Secrets를 써야 함)
 load_dotenv()
 
-# --- LLM 관련 라이브러리/초기화 코드 전부 삭제 ---
-# from langchain_openai import ChatOpenAI
-# from langchain_core.prompts import ChatPromptTemplate
-# from langchain_core.output_parsers import StrOutputParser
-# llm = ChatOpenAI(...) # <-- 삭제
-
 # 데이터 로드 함수 (캐싱 사용)
 @st.cache_data
 def load_champion_data(file_path):
