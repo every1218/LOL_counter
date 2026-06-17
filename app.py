@@ -6,7 +6,7 @@ import base64
 from dotenv import load_dotenv
 
 # 실행명령어
-# poetry run streamlit run lolcounter.py
+# poetry run streamlit run app.py
 
 # .env 파일에서 환경 변수 로드
 load_dotenv()
