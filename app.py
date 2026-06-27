@@ -133,8 +133,13 @@ def render_hard_counters(counters):
             font-size: 11px; font-weight: 700; text-align: center; pointer-events: none;
         }}
         .hc-card.active .hc-fallback {{ border-color: #ff4a4a; box-shadow: 0 0 16px rgba(255,74,74,.5); }}
-        .hc-label {{ font-size: 11px; font-weight: 600; color: #718096; white-space: nowrap; pointer-events: none; }}
+        .hc-label {{
+            font-size: 11px; font-weight: 600; color: #718096;
+            white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+            max-width: 56px; pointer-events: none;
+        }}
         .hc-card.active .hc-label {{ color: #ff4a4a; }}
+
     </style>
     <div class="hc-grid">{items_html}</div>
     <script>
@@ -184,6 +189,7 @@ def render_general_counters(counters):
         <div class="gc-item">
             {img_el}
             <div class="gc-name">{name}</div>
+            <div class="gc-tooltip">{name}</div>
         </div>"""
 
     gc_rows = max(1, (len(counters) + 7) // 8)
@@ -197,6 +203,7 @@ def render_general_counters(counters):
         .gc-item {{
             background: rgba(255,255,255,0.02); border: 1px solid rgba(0,0,0,0.08);
             border-radius: 10px; padding: 6px; width: 60px; text-align: center; transition: all .2s;
+            position: relative;
         }}
         .gc-item:hover {{ background: rgba(0,0,0,0.04); transform: translateY(-2px); }}
         .gc-img {{
@@ -213,6 +220,17 @@ def render_general_counters(counters):
             font-size: 11px; font-weight: 600; color: #718096;
             margin-top: 6px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
         }}
+        .gc-tooltip {{
+            visibility: hidden; opacity: 0;
+            position: absolute; bottom: -22px; left: 50%; transform: translateX(-50%);
+            background: rgba(20,20,30,0.92); color: #e2e8f0;
+            font-size: 10px; font-weight: 600; white-space: nowrap;
+            padding: 3px 7px; border-radius: 5px;
+            pointer-events: none; z-index: 9999;
+            transition: opacity .18s ease;
+            border: 1px solid rgba(255,255,255,0.15);
+        }}
+        .gc-item:hover .gc-tooltip {{ visibility: visible; opacity: 1; }}
     </style>
     <div class="gc-grid">{items_html}</div>
     """
@@ -607,6 +625,11 @@ def inject_custom_css():
         font-size: 13px !important;
         padding: 4px 16px !important;
     }
+    /* 헤더 hover 앵커 링크 아이콘 완전 숨김 */
+    h1 a, h2 a, h3 a, h4 a, h5 a, h6 a,
+    .stMarkdown h1 a, .stMarkdown h2 a, .stMarkdown h3 a {
+        display: none !important;
+    }
     </style>
     """
     st.markdown(custom_css, unsafe_allow_html=True)
@@ -614,9 +637,13 @@ def inject_custom_css():
 
 def main():
     """Streamlit 웹 앱의 메인 함수입니다."""
+    st.set_page_config(
+        page_title="롤 카운터 조회",
+        page_icon="champ_img/카운터조회.png",
+        layout="centered",
+    )
     inject_custom_css()
 
-    st.markdown("### 👑 LOL 챔피언 카운터 조회 👑")
 
     # 데이터 로드 (딕셔너리 형태로)
     champion_data_store = load_champion_data('champ.jsonl')
