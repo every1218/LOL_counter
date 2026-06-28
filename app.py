@@ -636,12 +636,12 @@ def inject_custom_css():
 
 
 def main():
-    """Streamlit 웹 앱의 메인 함수입니다."""
-    st.set_page_config(
-        page_title="롤 카운터 조회",
-        page_icon="champ_img/카운터조회.png",
-        layout="centered",
-    )
+    """Streamlit 웹 앱의 메인 함수입니다. <- 렉걸려서 폐기""" 
+    # st.set_page_config(
+    #     page_title="롤 카운터 조회",
+    #     page_icon="champ_img/카운터조회.png",
+    #     layout="centered",
+    # )
     inject_custom_css()
 
 
