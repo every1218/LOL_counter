@@ -644,6 +644,43 @@ def main():
     )
     inject_custom_css()
 
+    # 모바일 접속 시 안내 메시지 (CSS 미디어 쿼리로 모바일에서만 표시)
+    st.markdown(
+        """
+        <style>
+        .mobile-warning {
+            display: none;
+        }
+        @media (max-width: 768px) {
+            .mobile-warning {
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                gap: 10px;
+                background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+                border: 1px solid rgba(200, 155, 60, 0.5);
+                border-radius: 12px;
+                padding: 20px;
+                margin: 10px 0 20px 0;
+                color: #c89b3c;
+                font-size: 16px;
+                font-weight: 600;
+                text-align: center;
+                box-shadow: 0 4px 20px rgba(200, 155, 60, 0.15);
+            }
+            .mobile-warning .icon {
+                font-size: 24px;
+                flex-shrink: 0;
+            }
+        }
+        </style>
+        <div class="mobile-warning">
+            <span class="icon">🖥️</span>
+            <span>모바일은 데스크톱 모드를 사용해주세요</span>
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
 
     # 데이터 로드 (딕셔너리 형태로)
     champion_data_store = load_champion_data('champ.jsonl')
