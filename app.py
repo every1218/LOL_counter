@@ -394,8 +394,24 @@ def inject_custom_css():
     """앱에 프리미엄 테마 및 스타일을 적용하기 위한 CSS를 주입합니다."""
     custom_css = """
     <style>
+    /* 브라우저 다크모드 강제 비활성화 */
+    :root {
+        color-scheme: light only;
+    }
+    html {
+        color-scheme: light only;
+        forced-color-adjust: none;
+    }
+    /* Streamlit 내부 컨테이너도 라이트 모드 강제 */
+    .stApp, .stApp > *, [data-testid="stAppViewContainer"],
+    [data-testid="stHeader"], [data-testid="stSidebar"],
+    [data-testid="stMain"], [data-testid="stBottom"] {
+        color-scheme: light only !important;
+    }
+
     /* 폰트 및 기본 디자인 설정 */
     @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=Noto+Sans+KR:wght@300;400;700&display=swap');
+    
     
     html, body, [class*="css"], .stMarkdown {
         font-family: 'Outfit', 'Noto Sans KR', sans-serif;

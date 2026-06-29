@@ -1,5 +1,5 @@
 [theme]
-#base="white"
+base="light"
 
 # 주요 색상 (포인트)
 #primaryColor="#00C4FF"  # 밝은 형광 하늘색
