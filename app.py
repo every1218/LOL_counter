@@ -192,7 +192,7 @@ def render_general_counters(counters):
             <div class="gc-tooltip">{name}</div>
         </div>"""
 
-    gc_rows = max(1, (len(counters) + 7) // 8)
+    gc_rows = max(1, (len(counters) + 9) // 10)
     height  = max(110, gc_rows * 82 + 20)
 
     full_html = f"""
