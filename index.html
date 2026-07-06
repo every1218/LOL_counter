@@ -92,9 +92,7 @@
 
         /* ── 최상단 바 (테마 토글) ── */
         .top-bar {
-            display: flex;
-            justify-content: flex-end;
-            margin-bottom: 1.25rem;
+            display: none; /* 사용 안 함 - 테마 토글은 top-row 안에 위치 */
         }
 
         .theme-toggle {
@@ -132,6 +130,13 @@
 
         [data-theme="light"] .theme-btn.active {
             box-shadow: 0 2px 8px rgba(229, 62, 62, 0.3);
+        }
+
+        /* top-row 안에서 theme-toggle 세로 가운데 정렬 + 오른쪽 끝으로 밀기 */
+        .top-row .theme-toggle {
+            align-self: center;
+            flex-shrink: 0;
+            margin-left: auto;
         }
 
         /* ── 모바일 경고 ── */
@@ -832,14 +837,8 @@
     <div class="page-wrapper">
 
         <!-- 최상단 바: 테마 토글 -->
-        <div class="top-bar">
-            <div class="theme-toggle" role="group" aria-label="테마 선택">
-                <button id="btnDark" class="theme-btn" onclick="setTheme('dark')" aria-pressed="false">🌙
-                    다크</button>
-                <button id="btnLight" class="theme-btn active" onclick="setTheme('light')" aria-pressed="true">☀️
-                    라이트</button>
-            </div>
-        </div>
+        <!-- 테마 토글 삭제됨 (top-row 안으로 이동) -->
+        <div class="top-bar"></div>
 
         <!-- 모바일 경고 -->
         <div class="mobile-warning">
@@ -869,6 +868,12 @@
             <div class="synergy-panel" id="synergyPanel">
                 <div class="synergy-title" id="synergyTitle"></div>
                 <div class="sy-grid" id="synergyGrid"></div>
+            </div>
+
+            <!-- 주제 토글 (초기 화면에서만 표시) -->
+            <div class="theme-toggle" id="themeToggleWrap" role="group" aria-label="테마 선택">
+                <button id="btnDark" class="theme-btn" onclick="setTheme('dark')" aria-pressed="false">🌙 다크</button>
+                <button id="btnLight" class="theme-btn active" onclick="setTheme('light')" aria-pressed="true">☀️ 라이트</button>
             </div>
         </div>
 
@@ -1048,7 +1053,7 @@
             // 조회 후 잔기 화면 푸터 숨김
             document.getElementById('initialFooter').style.display = 'none';
             // 조회 후 테마 토글 숨김
-            document.querySelector('.top-bar').style.display = 'none';
+            document.getElementById('themeToggleWrap').style.display = 'none';
         }
 
         function renderHardCounters(counters) {
@@ -1203,7 +1208,7 @@
             // 결과 초기화 시 푸터 다시 표시
             document.getElementById('initialFooter').style.display = '';
             // 결과 초기화 시 테마 토글 다시 표시
-            document.querySelector('.top-bar').style.display = '';
+            document.getElementById('themeToggleWrap').style.display = '';
         }
 
         function clearAlerts() {
