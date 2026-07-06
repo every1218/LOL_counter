@@ -5,6 +5,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>롤 카운터 조회</title>
+    <link rel="icon" type="image/png" href="champ_img/icon.png" />
     <meta name="description" content="리그 오브 레전드 챔피언 카운터 정보를 빠르게 조회하세요. 하드 카운터, 일반 카운터, 추천 조합을 한눈에 확인할 수 있습니다." />
     <meta name="keywords" content="롤, 리그오브레전드, 카운터, 챔피언, LOL, counter" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -22,6 +23,7 @@
         }
 
         /* python -m http.server 8080   */
+        /* http://localhost:8080/ */
         /* ── 다크 모드 (기본) ── */
         :root,
         [data-theme="dark"] {
@@ -766,6 +768,61 @@
                 height: 80px;
             }
         }
+
+        /* ── 초기 화면 전용 푸터 (fixed, 최하단) ── */
+        .initial-footer {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            padding: 0.6rem 1rem;
+            text-align: center;
+            background: transparent;
+            pointer-events: none;
+        }
+
+        .footer-line {
+            font-size: 11px;
+            color: var(--text-muted);
+            line-height: 1.7;
+            pointer-events: auto;
+        }
+
+        .footer-line a {
+            color: var(--text-muted);
+            text-decoration: none;
+        }
+
+        .footer-line a:hover {
+            color: var(--accent-red);
+            text-decoration: underline;
+        }
+
+        /* 복사 이메일 */
+        .copy-email {
+            cursor: pointer;
+            color: var(--text-muted);
+            text-decoration: underline dotted;
+            transition: color 0.2s;
+        }
+
+        .copy-email:hover {
+            color: var(--accent-red);
+        }
+
+        .copy-toast {
+            display: inline-block;
+            opacity: 0;
+            margin-left: 6px;
+            font-size: 10px;
+            color: #4caf50;
+            transition: opacity 0.3s;
+            pointer-events: none;
+        }
+
+        .copy-toast.show {
+            opacity: 1;
+        }
     </style>
 </head>
 
@@ -845,6 +902,14 @@
         <div class="sy-hover-title" id="syHoverTitle"></div>
         <div class="sy-hover-grid" id="syHoverGrid"></div>
     </div>
+
+    <!-- 초기 화면 전용 푸터 (fixed, 페이지 최하단) -->
+    <footer id="initialFooter" class="initial-footer">
+        <p class="footer-line">오류제보 및 건의 :
+            <span class="copy-email" id="copyEmailBtn" onclick="copyEmail()">vschamplol@gmail.com</span>
+            <span class="copy-toast" id="copyToast">복사됨</span>
+        </p>
+    </footer>
     <script>
         var championDict = {};
         var activeHcCard = null;
@@ -977,6 +1042,8 @@
             document.getElementById('results-section').scrollIntoView({ behavior: 'smooth', block: 'start' });
             // 조회 후 모바일 경고 숨김
             document.querySelector('.mobile-warning').style.display = 'none';
+            // 조회 후 잔기 화면 푸터 숨김
+            document.getElementById('initialFooter').style.display = 'none';
         }
 
         function renderHardCounters(counters) {
@@ -1128,6 +1195,8 @@
             resetInfoPanel();
             // 결과 초기화 시 모바일 경고 다시 표시
             document.querySelector('.mobile-warning').style.display = '';
+            // 결과 초기화 시 푸터 다시 표시
+            document.getElementById('initialFooter').style.display = '';
         }
 
         function clearAlerts() {
@@ -1151,6 +1220,29 @@
         });
 
         loadData();
+
+        /* ── 이메일 복사 ── */
+        function copyEmail() {
+            var email = 'vschamplol@gmail.com';
+            navigator.clipboard.writeText(email).then(function () {
+                var toast = document.getElementById('copyToast');
+                toast.classList.add('show');
+                setTimeout(function () { toast.classList.remove('show'); }, 1500);
+            }).catch(function () {
+                // 폴백: 임시 textarea 사용
+                var ta = document.createElement('textarea');
+                ta.value = email;
+                ta.style.position = 'fixed';
+                ta.style.opacity = '0';
+                document.body.appendChild(ta);
+                ta.select();
+                document.execCommand('copy');
+                document.body.removeChild(ta);
+                var toast = document.getElementById('copyToast');
+                toast.classList.add('show');
+                setTimeout(function () { toast.classList.remove('show'); }, 1500);
+            });
+        }
     </script>
 </body>
 
