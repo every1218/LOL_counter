@@ -143,34 +143,6 @@
             margin-left: auto;
         }
 
-        /* ── 모바일 경고 ── */
-        .mobile-warning {
-            display: none;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
-            border: 1px solid rgba(200, 155, 60, 0.5);
-            border-radius: var(--radius-md);
-            padding: 18px 20px;
-            margin-bottom: 1.5rem;
-            color: #c89b3c;
-            font-size: 15px;
-            font-weight: 600;
-            text-align: center;
-            box-shadow: 0 4px 20px rgba(200, 155, 60, 0.15);
-        }
-
-        .mobile-warning .icon {
-            font-size: 22px;
-            flex-shrink: 0;
-        }
-
-        @media (max-width: 768px) {
-            .mobile-warning {
-                display: flex;
-            }
-        }
 
         /* ── 검색 패널 ── */
         .search-panel {
@@ -844,11 +816,7 @@
         <!-- 테마 토글 삭제됨 (top-row 안으로 이동) -->
         <div class="top-bar"></div>
 
-        <!-- 모바일 경고 -->
-        <div class="mobile-warning">
-            <span class="icon">&#128421;</span>
-            <span>모바일은 데스크톱 모드를 사용해주세요</span>
-        </div>
+
 
         <!-- 상단 행: 검색 + 시너지 -->
         <div class="top-row">
@@ -1053,8 +1021,7 @@
             resetInfoPanel();
             document.getElementById('results-section').classList.add('show');
             document.getElementById('results-section').scrollIntoView({ behavior: 'smooth', block: 'start' });
-            // 조회 후 모바일 경고 숨김
-            document.querySelector('.mobile-warning').style.display = 'none';
+
             // 조회 후 잔기 화면 푸터 숨김
             document.getElementById('initialFooter').style.display = 'none';
             // 조회 후 테마 토글 숨김
@@ -1208,8 +1175,7 @@
             document.getElementById('synergyPanel').classList.remove('show');
             document.getElementById('synergyGrid').innerHTML = '';
             resetInfoPanel();
-            // 결과 초기화 시 모바일 경고 다시 표시
-            document.querySelector('.mobile-warning').style.display = '';
+
             // 결과 초기화 시 푸터 다시 표시
             document.getElementById('initialFooter').style.display = '';
             // 결과 초기화 시 테마 토글 다시 표시
