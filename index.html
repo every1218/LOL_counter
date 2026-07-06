@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="ko" data-theme="dark">
+<html lang="ko" data-theme="light">
 
 <head>
     <meta charset="UTF-8" />
@@ -832,9 +832,10 @@
         <!-- 최상단 바: 테마 토글 -->
         <div class="top-bar">
             <div class="theme-toggle" role="group" aria-label="테마 선택">
-                <button id="btnDark" class="theme-btn active" onclick="setTheme('dark')" aria-pressed="true">🌙
+                <button id="btnDark" class="theme-btn" onclick="setTheme('dark')" aria-pressed="false">🌙
                     다크</button>
-                <button id="btnLight" class="theme-btn" onclick="setTheme('light')" aria-pressed="false">☀️ 라이트</button>
+                <button id="btnLight" class="theme-btn active" onclick="setTheme('light')" aria-pressed="true">☀️
+                    라이트</button>
             </div>
         </div>
 
@@ -924,7 +925,7 @@
             document.getElementById('btnLight').setAttribute('aria-pressed', theme === 'light');
         }
         (function () {
-            var saved = localStorage.getItem('lol-theme') || 'dark';
+            var saved = localStorage.getItem('lol-theme') || 'light';
             setTheme(saved);
         })();
 
