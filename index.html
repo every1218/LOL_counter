@@ -73,7 +73,7 @@
         }
 
         html {
-            zoom: 0.8;
+            zoom: 0.9;
         }
 
         html,
@@ -1182,7 +1182,7 @@
             }).join('');
 
             var rect = el.getBoundingClientRect();
-            // html { zoom: 0.8 } 보정: 뷰포트 픽셀 → fixed CSS 픽셀 변환
+            // html { zoom: 0.9 } 보정: 뷰포트 픽셀 → fixed CSS 픽셀 변환
             var zoom = parseFloat(getComputedStyle(document.documentElement).zoom) || 1;
             panel.style.top = 'auto';
             panel.style.left = 'auto';
