@@ -1045,6 +1045,8 @@
             document.querySelector('.mobile-warning').style.display = 'none';
             // 조회 후 잔기 화면 푸터 숨김
             document.getElementById('initialFooter').style.display = 'none';
+            // 조회 후 테마 토글 숨김
+            document.querySelector('.top-bar').style.display = 'none';
         }
 
         function renderHardCounters(counters) {
@@ -1198,6 +1200,8 @@
             document.querySelector('.mobile-warning').style.display = '';
             // 결과 초기화 시 푸터 다시 표시
             document.getElementById('initialFooter').style.display = '';
+            // 결과 초기화 시 테마 토글 다시 표시
+            document.querySelector('.top-bar').style.display = '';
         }
 
         function clearAlerts() {
