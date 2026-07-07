@@ -1,6 +1,7 @@
 import re
 import json
 import sys
+import os
 
 # Windows 터미널 UTF-8 출력 설정
 sys.stdout.reconfigure(encoding='utf-8')
@@ -52,9 +53,7 @@ def main():
     # 1. 여기에 위키에서 복사한 "기타" 섹션 등의 텍스트를 붙여넣기
     RAW_TEXT_INPUT = """
 
-신속의 장화: 아트록스의 진짜 하드 카운터는 피오라나 이렐리아가 아닌 사실상 신속의 장화라고 봐도 과언이 아니다. 이동속도가 다른 신발들보다 빨라서 다르킨의 검을 피하기 쉽고, 거기에 둔화 저항이 있어서 지옥사슬을 맞춰도 끌릴 확률을 떨어트려서 사슬을 통한 콤보를 넣어야 하는 아트록스 입장에선 상당히 골치 아프다. 이 아이템을 티모나 럼블같은 이속증가 스킬을 가진 챔피언이 간다면 딜교 성립을 시키기 힘들어지고 아트록스는 그냥 허공에 칼만 휘두르게 된다.
-
-
+일라오이 : 몇년만에 LCK에서 일라오이가 나왔을 정도로(26.04.26 DK vs DNS) 라인전의 최악 하드 카운터. 레넥톤 입장에서는 초반에 솔킬을 여러 번 따두고 갱도 불러서 아예 불구로 만들어 버리는 게 아닌 이상 혼자 이기는 건 거의 불가능하다. 돌진하면서 머리를 들이미는 레넥톤 특성상 일라오이의 영혼의 시험(E)각을 매우 쉽게 내주고 또 근접으로 싸우는 챔이라서 영혼에 끌렸을 때 손해도 더욱 크다. 그래도 초반 라인전은 레넥의 힘이 강하고 일라오이는 꽤 약해서 리드도 어느 정도는 가능하다. 근데 가장 큰 문제는 라인전 중반부터는 이런 식으로도 이길각이 아예 사라진다는 것, 레넥의 장기인 궁 체급도 일라오이의 궁 앞에는 한없이 초라해지고, 시간이 지날수록 일라오이의 E쿨이 줄어들고 맞혔을 때의 리턴도 더 커지는데 레넥톤의 폭딜은 일라오이가 방템 몇 개 적당히 둘러주면 잘 박히지도 않는다. 들어가도 손해를 보고 안 들어가도 계속 촉수를 맞고 영혼 끌려다가 두들겨 맞는 딜레마가 계속된다는 것. 시간이 지날수록 라인전에서 버틸 방법은 타워 허깅하면서 일라가 E를 던질 때마다 E로 피하는 거 빼고는 없어진다. 갱을 부르자니 일라오이는 궁이 있으면 오히려 다인전을 좋아하는 챔프라 역으로 잡아먹힐 가능성이 큰 것도 문제. 후반 한타 영향력은 일라오이가 촉수 사전 작업을 하지 않았다면 크게 밀리지는 않지만, 몸을 들이대서 싸우는 레넥톤의 특성상 일라오이의 E 셔틀이 되어 다인궁 재료가 되면서 그대로 한타가 폭망할 수 있기에 매우 거슬린다. 물론 후반 사이드는 상대도 안 되지만 한타는 레넥톤 입장에서도 할만 하기에 최대한 오브젝트 주변 촉수를 지워 일라오이가 힘을 못 쓰게 만들어주자.
 
 
     """
@@ -65,21 +64,24 @@ def main():
     # 2. 파싱 실행
     parsed_data = parse_champion_descriptions(RAW_TEXT_INPUT)
 
-    print("--- 파싱 완료 (줄바꿈 없이 한 줄로 출력) ---")
-    
-# 3. ⭐️ 수정된 출력 로직 (마지막 콤마 제거)
+    print("--- 파싱 완료 ---")
+
+# 3. ⭐️ pretty-print JSON 블록 출력 로직
     output_lines = []
-    for i, item in enumerate(parsed_data):
-        json_line = json.dumps(item, ensure_ascii=False)
-        output_lines.append(json_line + ", ")
+    for item in parsed_data:
+        # 들여쓰기 2칸으로 JSON 직렬화 후, 각 줄 앞에 6칸 공백 추가
+        json_block = json.dumps(item, ensure_ascii=False, indent=2)
+        indented = "\n".join("      " + line for line in json_block.splitlines())
+        output_lines.append(indented + ",")
 
-    full_output = "".join(output_lines)
+    full_output = "\n".join(output_lines)
 
-    # 터미널 출력 (줄바꿈으로 인한 한글 깨짐 발생 가능)
+    # 터미널 출력
     print(full_output)
 
     # [OK] 파일 출력 (복사할 때는 이 파일을 사용하세요)
-    output_path = "output.txt"
+    script_dir = os.path.dirname(os.path.abspath(__file__))
+    output_path = os.path.join(script_dir, "output.txt")
     with open(output_path, "w", encoding="utf-8") as f:
         f.write(full_output + "\n")
     print(f"\n[OK] 결과가 '{output_path}' 파일에 저장되었습니다. 복사는 파일에서 하세요!")
