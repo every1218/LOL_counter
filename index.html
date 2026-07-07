@@ -2,13 +2,24 @@
 <html lang="ko" data-theme="light">
 
 <head>
+    <meta charset="UTF-8" />
     <meta name="google-site-verification" content="uQGqn8VpWizoRPu0Ki5VEgJmi4ZJpa4TcqI0er2ADgI" />
     <meta name="naver-site-verification" content="7ccd4ba2e277631c905fc55754190e7a9ee40f52" />
 
-    <meta charset="UTF-8" />
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-66DBCD4D0R"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag() { dataLayer.push(arguments); }
+        gtag('js', new Date());
+
+        gtag('config', 'G-66DBCD4D0R');
+    </script>
+
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>롤 챔피언 상성 정리</title>
     <link rel="icon" type="image/png" href="champ_img/icon.png" />
+
     <!-- Vercel Analytics (정적 HTML용) -->
     <script defer src="/_vercel/insights/script.js"></script>
     <meta name="description" content="리그 오브 레전드 챔피언 카운터 정보를 빠르게 조회하세요. 하드 카운터, 일반 카운터, 추천 조합을 한눈에 확인할 수 있습니다." />
@@ -836,8 +847,15 @@
         }
 
         @keyframes acFadeIn {
-            from { opacity: 0; transform: translateY(-4px); }
-            to   { opacity: 1; transform: translateY(0); }
+            from {
+                opacity: 0;
+                transform: translateY(-4px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
 
         .ac-item {
@@ -920,7 +938,7 @@
                     <div class="thumb-fallback" id="champThumbFallback" style="display:none;">⚔️</div>
                 </div>
                 <div class="search-form">
-                    <label class="search-label" for="champInput">카운터 정보를 알고 싶은 챔피언 이름을 입력하세요:</label>
+                    <label class="search-label" for="champInput">카운터 정보를 알고 싶은 챔피언을 입력하세요:</label>
                     <div class="search-row">
                         <div class="autocomplete-wrap">
                             <input type="text" id="champInput" class="search-input" placeholder="예: 가렌, 갱플, 아리 ..."
@@ -1301,7 +1319,7 @@
         /* ── 자동완성 ── */
         (function () {
             var input = document.getElementById('champInput');
-            var list  = document.getElementById('autocompleteList');
+            var list = document.getElementById('autocompleteList');
             var acIdx = -1;  // 현재 키보드로 선택된 항목 인덱스
 
             /* 입력값에서 하이라이트 처리 */
