@@ -806,6 +806,99 @@
         .copy-toast.show {
             opacity: 1;
         }
+
+        /* ── 자동완성 드롭다운 ── */
+        .autocomplete-wrap {
+            position: relative;
+            flex: 1;
+        }
+
+        .autocomplete-list {
+            position: absolute;
+            top: calc(100% + 4px);
+            left: 0;
+            right: 0;
+            background: var(--bg-panel);
+            border: 1px solid var(--border-subtle);
+            border-radius: var(--radius-md);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.25);
+            z-index: 10000;
+            max-height: 280px;
+            overflow-y: auto;
+            display: none;
+            scrollbar-width: thin;
+            scrollbar-color: rgba(255, 74, 74, 0.3) transparent;
+        }
+
+        .autocomplete-list.open {
+            display: block;
+            animation: acFadeIn 0.15s ease;
+        }
+
+        @keyframes acFadeIn {
+            from { opacity: 0; transform: translateY(-4px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+
+        .ac-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 7px 12px;
+            cursor: pointer;
+            transition: background 0.15s ease;
+            border-bottom: 1px solid var(--border-subtle);
+        }
+
+        .ac-item:last-child {
+            border-bottom: none;
+        }
+
+        .ac-item:hover,
+        .ac-item.ac-active {
+            background: rgba(255, 74, 74, 0.1);
+        }
+
+        .ac-thumb {
+            width: 32px;
+            height: 32px;
+            border-radius: 6px;
+            object-fit: cover;
+            border: 1.5px solid var(--border-subtle);
+            flex-shrink: 0;
+            display: block;
+        }
+
+        .ac-thumb-fb {
+            width: 32px;
+            height: 32px;
+            border-radius: 6px;
+            border: 1.5px solid var(--border-subtle);
+            background: var(--gc-bg);
+            color: var(--text-muted);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            font-size: 10px;
+            font-weight: 700;
+            flex-shrink: 0;
+        }
+
+        .ac-name {
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .ac-alias {
+            font-size: 11px;
+            color: var(--text-muted);
+            margin-left: 2px;
+        }
+
+        .ac-highlight {
+            color: var(--accent-red);
+        }
     </style>
 </head>
 
@@ -829,8 +922,11 @@
                 <div class="search-form">
                     <label class="search-label" for="champInput">카운터 정보를 알고 싶은 챔피언 이름을 입력하세요:</label>
                     <div class="search-row">
-                        <input type="text" id="champInput" class="search-input" placeholder="예: 가렌, 갱플, 아리 ..."
-                            autocomplete="off" spellcheck="false" />
+                        <div class="autocomplete-wrap">
+                            <input type="text" id="champInput" class="search-input" placeholder="예: 가렌, 갱플, 아리 ..."
+                                autocomplete="off" spellcheck="false" style="width:100%;" />
+                            <div class="autocomplete-list" id="autocompleteList"></div>
+                        </div>
                         <button id="searchBtn" class="search-btn">조회하기</button>
                     </div>
                 </div>
@@ -995,6 +1091,9 @@
             var query = document.getElementById('champInput').value.trim();
             clearAlerts();
             clearResults();
+            // 자동완성 창 닫기
+            var acList = document.getElementById('autocompleteList');
+            if (acList) { acList.classList.remove('open'); acList.innerHTML = ''; }
             if (!query) { showAlert('warning', '챔피언 이름을 입력해주세요.'); return; }
             var data = championDict[query];
             if (!data) { showAlert('error', "'" + query + "'에 대한 데이터를 찾을 수 없습니다. 챔피언 이름(별칭 포함)을 다시 확인해주세요."); return; }
@@ -1198,9 +1297,139 @@
         }
 
         document.getElementById('searchBtn').addEventListener('click', search);
-        document.getElementById('champInput').addEventListener('keydown', function (e) {
-            if (e.key === 'Enter') search();
-        });
+
+        /* ── 자동완성 ── */
+        (function () {
+            var input = document.getElementById('champInput');
+            var list  = document.getElementById('autocompleteList');
+            var acIdx = -1;  // 현재 키보드로 선택된 항목 인덱스
+
+            /* 입력값에서 하이라이트 처리 */
+            function highlight(text, query) {
+                if (!query) return text;
+                var idx = text.toLowerCase().indexOf(query.toLowerCase());
+                if (idx === -1) return text;
+                return text.substring(0, idx)
+                    + '<span class="ac-highlight">'
+                    + text.substring(idx, idx + query.length)
+                    + '</span>'
+                    + text.substring(idx + query.length);
+            }
+
+            /* 드롭다운 닫기 */
+            function closeList() {
+                list.classList.remove('open');
+                list.innerHTML = '';
+                acIdx = -1;
+            }
+
+            /* active 항목 갱신 */
+            function setActive(items, idx) {
+                items.forEach(function (el, i) {
+                    el.classList.toggle('ac-active', i === idx);
+                });
+                if (idx >= 0 && items[idx]) {
+                    items[idx].scrollIntoView({ block: 'nearest' });
+                }
+            }
+
+            /* 자동완성 목록 렌더링 */
+            function renderAC(query) {
+                if (!query) { closeList(); return; }
+                var q = query.toLowerCase();
+
+                // championDict 키에서 중복 없이 매칭된 champion 데이터만 모으기
+                var seen = {};
+                var results = [];
+                Object.keys(championDict).forEach(function (key) {
+                    if (key.toLowerCase().indexOf(q) === -1) return;
+                    var data = championDict[key];
+                    var cname = data.champion;
+                    if (seen[cname]) return;
+                    seen[cname] = true;
+                    // 입력값이 별칭과 매칭됐는지 체크
+                    var matchedAlias = (key !== cname) ? key : null;
+                    results.push({ data: data, matchedKey: key, matchedAlias: matchedAlias });
+                });
+
+                // 정렬: 챔피언 이름 앞부분 일치 우선
+                results.sort(function (a, b) {
+                    var aStart = a.data.champion.toLowerCase().startsWith(q) ? 0 : 1;
+                    var bStart = b.data.champion.toLowerCase().startsWith(q) ? 0 : 1;
+                    if (aStart !== bStart) return aStart - bStart;
+                    return a.data.champion.localeCompare(b.data.champion);
+                });
+
+                // 최대 10개
+                results = results.slice(0, 10);
+
+                if (!results.length) { closeList(); return; }
+
+                list.innerHTML = results.map(function (r, i) {
+                    var cname = r.data.champion;
+                    var urls = buildUrls(cname);
+                    var urlsJson = JSON.stringify(urls).replace(/"/g, '&quot;');
+                    return '<div class="ac-item" data-champion="' + cname.replace(/"/g, '&quot;') + '" data-idx="' + i + '">'
+                        + '<img class="ac-thumb" src="' + urls[0] + '" alt="' + cname
+                        + '" data-urls="' + urlsJson + '" data-url-idx="0" onerror="handleImgError(this)" />'
+                        + '<div class="ac-thumb-fb">' + cname.substring(0, 2) + '</div>'
+                        + '<div><span class="ac-name">' + highlight(cname, query) + '</span></div>'
+                        + '</div>';
+                }).join('');
+
+                list.classList.add('open');
+                acIdx = -1;
+
+                // 클릭 이벤트
+                list.querySelectorAll('.ac-item').forEach(function (el) {
+                    el.addEventListener('mousedown', function (e) {
+                        e.preventDefault();  // blur 방지
+                        input.value = el.getAttribute('data-champion');
+                        closeList();
+                        search();
+                    });
+                });
+            }
+
+            /* 입력 이벤트 */
+            input.addEventListener('input', function () {
+                acIdx = -1;
+                renderAC(this.value.trim());
+            });
+
+            /* 키보드 탐색 */
+            input.addEventListener('keydown', function (e) {
+                var items = list.querySelectorAll('.ac-item');
+                if (e.key === 'ArrowDown') {
+                    e.preventDefault();
+                    if (!list.classList.contains('open')) { renderAC(input.value.trim()); return; }
+                    acIdx = Math.min(acIdx + 1, items.length - 1);
+                    setActive(items, acIdx);
+                } else if (e.key === 'ArrowUp') {
+                    e.preventDefault();
+                    acIdx = Math.max(acIdx - 1, -1);
+                    setActive(items, acIdx);
+                } else if (e.key === 'Enter') {
+                    if (acIdx >= 0 && items[acIdx]) {
+                        input.value = items[acIdx].getAttribute('data-champion');
+                        closeList();
+                    }
+                    search();
+                } else if (e.key === 'Escape') {
+                    closeList();
+                }
+            });
+
+            /* 포커스 아웃 시 닫기 */
+            input.addEventListener('blur', function () {
+                setTimeout(closeList, 150);
+            });
+
+            /* 포커스 인 시 다시 열기 */
+            input.addEventListener('focus', function () {
+                if (this.value.trim()) renderAC(this.value.trim());
+            });
+        })();
 
         loadData();
 
