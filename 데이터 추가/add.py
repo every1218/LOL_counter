@@ -2,6 +2,9 @@ import re
 import json
 import sys
 
+# Windows 터미널 UTF-8 출력 설정
+sys.stdout.reconfigure(encoding='utf-8')
+
 def parse_champion_descriptions(raw_text):
     """
     "이름 : 설명" 형식의 여러 문단 텍스트를
@@ -49,7 +52,7 @@ def main():
     # 1. 여기에 위키에서 복사한 "기타" 섹션 등의 텍스트를 붙여넣기
     RAW_TEXT_INPUT = """
 
-신속의 장화 : 나서스는 화력의 8할 이상을 흡수의 일격에 의존하는데 그 흡수의 일격은 온힛 스킬, 즉 평타 사거리에 의존한다. 그러나 나서스의 평타 사거리는 125로 매우 짧은 편이며, 궁극기가 발동된 상태에서 흡수의 일격의 사거리는 225에 불과하다. 따라서 적에게 바싹 달라붙어야만 딜을 넣을 수 있는데, 쇠약으로 중거리에서 둔화를 걸 수 있기는 하지만 아무리 둔화율이 높다고 한들 결국 하드 CC기가 아닌 한 대상만을 둔화시키는 것에 불과하기 때문에 신속의 장화로 둔화를 무마하는 방법으로 간단하게 카운터칠 수 있다. 또한 쇠약의 공격 속도 감소는 둔화 수치에 비례하기에, 평타형 딜러는 공속신 말고 신속의 장화를 올리는 게 훨씬 낫다.
+신속의 장화: 아트록스의 진짜 하드 카운터는 피오라나 이렐리아가 아닌 사실상 신속의 장화라고 봐도 과언이 아니다. 이동속도가 다른 신발들보다 빨라서 다르킨의 검을 피하기 쉽고, 거기에 둔화 저항이 있어서 지옥사슬을 맞춰도 끌릴 확률을 떨어트려서 사슬을 통한 콤보를 넣어야 하는 아트록스 입장에선 상당히 골치 아프다. 이 아이템을 티모나 럼블같은 이속증가 스킬을 가진 챔피언이 간다면 딜교 성립을 시키기 힘들어지고 아트록스는 그냥 허공에 칼만 휘두르게 된다.
 
 
 
@@ -65,14 +68,21 @@ def main():
     print("--- 파싱 완료 (줄바꿈 없이 한 줄로 출력) ---")
     
 # 3. ⭐️ 수정된 출력 로직 (마지막 콤마 제거)
+    output_lines = []
     for i, item in enumerate(parsed_data):
         json_line = json.dumps(item, ensure_ascii=False)
-        print(json_line, end="") # 객체만 출력
+        output_lines.append(json_line + ", ")
 
-        print(", ", end="")
-            
-    # 마지막에만 줄바꿈을 한 번 실행 (터미널 프롬프트가 붙는 것 방지)
-    print()
+    full_output = "".join(output_lines)
+
+    # 터미널 출력 (줄바꿈으로 인한 한글 깨짐 발생 가능)
+    print(full_output)
+
+    # [OK] 파일 출력 (복사할 때는 이 파일을 사용하세요)
+    output_path = "output.txt"
+    with open(output_path, "w", encoding="utf-8") as f:
+        f.write(full_output + "\n")
+    print(f"\n[OK] 결과가 '{output_path}' 파일에 저장되었습니다. 복사는 파일에서 하세요!")
 
 
 if __name__ == '__main__':

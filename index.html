@@ -7,7 +7,7 @@
 
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>롤 카운터 조회</title>
+    <title>롤 챔피언 상성 정리</title>
     <link rel="icon" type="image/png" href="champ_img/icon.png" />
     <!-- Vercel Analytics (정적 HTML용) -->
     <script defer src="/_vercel/insights/script.js"></script>
@@ -1111,7 +1111,7 @@
                 panel.classList.remove('show');
                 return;
             }
-            title.textContent = '🤝 ' + champName + josaWaGwa(champName) + ' 잘 어울리는 챔피언';
+            title.textContent = '🤝 ' + champName + josaWaGwa(champName) + ' 어울리는 챔피언';
             grid.innerHTML = synergies.map(function (name) {
                 var urls = buildUrls(name);
                 var urlsJson = JSON.stringify(urls).replace(/"/g, '&quot;');
@@ -1137,7 +1137,7 @@
             if (!synergies.length) { hideSyHover(); return; }
 
             var panel = document.getElementById('syHoverPanel');
-            document.getElementById('syHoverTitle').textContent = '🤝 ' + name + josaWaGwa(name) + ' 잘 어울리는 챔피언';
+            document.getElementById('syHoverTitle').textContent = '🤝 ' + name + josaWaGwa(name) + ' 어울리는 챔피언';
             document.getElementById('syHoverGrid').innerHTML = synergies.map(function (sname) {
                 var urls = buildUrls(sname);
                 var urlsJson = JSON.stringify(urls).replace(/"/g, '&quot;');

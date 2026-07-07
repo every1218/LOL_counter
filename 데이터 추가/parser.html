@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>LOL Counter 텍스트 파서</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #0d0f1a;
+      --surface: #151828;
+      --surface2: #1c2135;
+      --border: #2a3050;
+      --accent: #5b6ef5;
+      --accent-glow: rgba(91, 110, 245, 0.35);
+      --accent2: #a78bfa;
+      --success: #34d399;
+      --success-bg: rgba(52, 211, 153, 0.12);
+      --text: #e2e8f0;
+      --text-muted: #7c8db5;
+      --gold: #f0b429;
+    }
+
+    body {
+      font-family: 'Outfit', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      padding: 40px 20px;
+      background-image:
+        radial-gradient(ellipse 80% 50% at 50% -10%, rgba(91,110,245,0.18) 0%, transparent 60%),
+        radial-gradient(ellipse 50% 40% at 90% 80%, rgba(167,139,250,0.1) 0%, transparent 60%);
+    }
+
+    .container { max-width: 860px; margin: 0 auto; }
+
+    header { text-align: center; margin-bottom: 40px; }
+    .badge {
+      display: inline-block;
+      background: linear-gradient(135deg, rgba(91,110,245,0.2), rgba(167,139,250,0.2));
+      border: 1px solid rgba(91,110,245,0.4);
+      border-radius: 999px;
+      padding: 4px 14px;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--accent2);
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      margin-bottom: 14px;
+    }
+    h1 {
+      font-size: clamp(1.8rem, 4vw, 2.6rem);
+      font-weight: 700;
+      background: linear-gradient(135deg, #fff 30%, var(--accent2));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      line-height: 1.2;
+    }
+    .subtitle { margin-top: 10px; color: var(--text-muted); font-size: 15px; }
+
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 28px;
+      margin-bottom: 20px;
+      transition: border-color 0.25s;
+    }
+    .card:focus-within {
+      border-color: rgba(91,110,245,0.5);
+      box-shadow: 0 0 0 4px rgba(91,110,245,0.08);
+    }
+
+    .label-row {
+      display: flex; align-items: center; gap: 8px; margin-bottom: 14px;
+    }
+    .label-icon {
+      width: 28px; height: 28px; border-radius: 8px;
+      display: flex; align-items: center; justify-content: center; font-size: 14px;
+    }
+    .label-icon.inp  { background: rgba(91,110,245,0.15); }
+    .label-icon.out  { background: rgba(52,211,153,0.12); }
+    .label-text {
+      font-size: 14px; font-weight: 600; color: var(--text-muted);
+      letter-spacing: 0.04em; text-transform: uppercase;
+    }
+
+    textarea {
+      width: 100%;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      color: var(--text);
+      font-family: 'Outfit', sans-serif;
+      font-size: 14px;
+      line-height: 1.7;
+      padding: 16px;
+      resize: vertical;
+      min-height: 180px;
+      outline: none;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+    textarea:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px var(--accent-glow);
+    }
+    textarea::placeholder { color: #3d4d72; }
+
+    .hint {
+      margin-top: 10px;
+      padding: 12px 14px;
+      background: rgba(240,180,41,0.07);
+      border: 1px solid rgba(240,180,41,0.2);
+      border-radius: 8px;
+      font-size: 13px;
+      color: #c49a1a;
+      line-height: 1.6;
+    }
+    .hint code {
+      background: rgba(240,180,41,0.12);
+      border-radius: 4px;
+      padding: 1px 6px;
+      font-family: monospace;
+      font-size: 12px;
+    }
+
+    .btn-row { display: flex; gap: 10px; margin: 20px 0; }
+    button {
+      cursor: pointer;
+      font-family: 'Outfit', sans-serif;
+      font-weight: 600;
+      border: none;
+      border-radius: 10px;
+      transition: all 0.2s;
+    }
+    #parseBtn {
+      flex: 1;
+      padding: 14px 24px;
+      font-size: 15px;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      color: #fff;
+      letter-spacing: 0.03em;
+      box-shadow: 0 4px 24px rgba(91,110,245,0.3);
+    }
+    #parseBtn:hover { transform: translateY(-2px); box-shadow: 0 8px 32px rgba(91,110,245,0.45); }
+    #parseBtn:active { transform: translateY(0); }
+
+    #clearBtn {
+      padding: 14px 20px; font-size: 14px;
+      background: var(--surface2); color: var(--text-muted); border: 1px solid var(--border);
+    }
+    #clearBtn:hover { background: var(--border); color: var(--text); }
+
+    #outputCard { display: none; }
+    #outputCard.visible { display: block; }
+
+    .output-header {
+      display: flex; align-items: center; justify-content: space-between;
+      margin-bottom: 14px; flex-wrap: wrap; gap: 10px;
+    }
+
+    #outputBox {
+      width: 100%;
+      background: #0a0c14;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      color: #a9d7a0;
+      font-family: 'Courier New', monospace;
+      font-size: 13px;
+      line-height: 1.75;
+      padding: 18px;
+      resize: vertical;
+      min-height: 100px;
+      outline: none;
+      white-space: pre-wrap;
+      word-break: break-all;
+    }
+
+    .stats { display: flex; gap: 12px; margin-top: 12px; flex-wrap: wrap; }
+    .stat-chip {
+      font-size: 12px; font-weight: 500; padding: 4px 12px; border-radius: 999px;
+      background: rgba(91,110,245,0.1); border: 1px solid rgba(91,110,245,0.25); color: var(--accent2);
+    }
+
+    #copyBtn {
+      padding: 10px 20px; font-size: 13px;
+      background: var(--success-bg); color: var(--success);
+      border: 1px solid rgba(52,211,153,0.3);
+      display: flex; align-items: center; gap: 6px;
+    }
+    #copyBtn:hover { background: rgba(52,211,153,0.22); box-shadow: 0 2px 12px rgba(52,211,153,0.2); }
+    #copyBtn.copied { background: rgba(52,211,153,0.25); color: #fff; border-color: var(--success); }
+
+    .error-msg {
+      display: none; margin-top: -10px; margin-bottom: 16px;
+      padding: 14px 16px;
+      background: rgba(239,68,68,0.08); border: 1px solid rgba(239,68,68,0.25);
+      border-radius: 10px; color: #f87171; font-size: 14px;
+    }
+    .error-msg.show { display: block; }
+
+    #itemsPreview { margin-top: 20px; }
+    .item-card {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 16px 18px;
+      margin-bottom: 10px;
+      animation: fadeSlide 0.3s ease both;
+    }
+    @keyframes fadeSlide {
+      from { opacity: 0; transform: translateY(6px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    .item-name {
+      font-size: 13px; font-weight: 700; color: var(--gold); margin-bottom: 6px;
+      display: flex; align-items: center; gap: 6px;
+    }
+    .item-name::before {
+      content: ''; display: inline-block; width: 6px; height: 6px;
+      border-radius: 50%; background: var(--gold);
+    }
+    .item-reason { font-size: 13px; color: var(--text-muted); line-height: 1.7; }
+
+    .shortcut-hint {
+      text-align: center; margin-top: -8px; margin-bottom: 16px;
+      font-size: 12px; color: #3a4560;
+    }
+    .shortcut-hint kbd {
+      background: var(--surface2); border: 1px solid var(--border);
+      border-radius: 4px; padding: 1px 6px; font-size: 11px; color: var(--text-muted);
+    }
+
+    footer { text-align: center; margin-top: 40px; font-size: 12px; color: #3a4560; }
+  </style>
+</head>
+<body>
+<div class="container">
+
+  <header>
+    <div class="badge">LOL Counter Tool</div>
+    <h1>텍스트 파서</h1>
+    <p class="subtitle">위키 텍스트를 JSON 형식으로 변환 &middot; 한 번의 클릭으로 복사</p>
+  </header>
+
+  <div class="card">
+    <div class="label-row">
+      <div class="label-icon inp">📝</div>
+      <span class="label-text">입력 텍스트</span>
+    </div>
+    <textarea id="inputText" placeholder="여기에 위키에서 복사한 텍스트를 붙여넣으세요.
+
+예시:
+신속의 장화: 아트록스의 진짜 하드 카운터는 피오라나 이렐리아가 아닌...
+
+피오라: 아트록스의 스킬을 칼막기로 무력화할 수 있어서..."></textarea>
+    <div class="hint">
+      형식: <code>이름: 설명</code> 또는 <code>이름 : 설명</code> — 여러 항목을 줄바꿈으로 구분하세요.
+    </div>
+  </div>
+
+  <div class="btn-row">
+    <button id="parseBtn" onclick="parse()">⚡ 파싱 시작</button>
+    <button id="clearBtn" onclick="clearAll()">초기화</button>
+  </div>
+  <p class="shortcut-hint"><kbd>Ctrl</kbd> + <kbd>Enter</kbd> 로도 파싱할 수 있습니다</p>
+
+  <div class="error-msg" id="errorMsg"></div>
+
+  <div class="card" id="outputCard">
+    <div class="output-header">
+      <div class="label-row" style="margin-bottom:0">
+        <div class="label-icon out">✅</div>
+        <span class="label-text">파싱 결과</span>
+      </div>
+      <button id="copyBtn" onclick="copyOutput()">
+        <span id="copyIcon">📋</span>
+        <span id="copyText">클릭하여 복사</span>
+      </button>
+    </div>
+
+    <textarea id="outputBox" readonly></textarea>
+    <div class="stats" id="statsBar"></div>
+    <div id="itemsPreview"></div>
+  </div>
+
+  <footer>LOL Counter Parser &nbsp;&middot;&nbsp; 터미널 줄바꿈 없이 안전하게 복사</footer>
+</div>
+
+<script>
+  function parseChampionDescriptions(rawText) {
+    const text = rawText.trim();
+    const pattern = /([가-힣A-Za-z\s()（）&,]+?)\s*:\s*([\s\S]*?)(?=\n[가-힣A-Za-z\s()（）&,]+?\s*:|$)/g;
+    const results = [];
+    let match;
+    while ((match = pattern.exec(text)) !== null) {
+      const name = match[1].trim();
+      let reason = match[2].trim()
+        .replace(/\[\d+\]/g, '')
+        .replace(/\s*\n\s*/g, ' ')
+        .trim();
+      if (!name || !reason) continue;
+      results.push({ name, reason });
+    }
+    return results;
+  }
+
+  function parse() {
+    const input = document.getElementById('inputText').value;
+    const errorMsg = document.getElementById('errorMsg');
+    const outputCard = document.getElementById('outputCard');
+
+    errorMsg.classList.remove('show');
+
+    if (!input.trim()) {
+      errorMsg.textContent = '⚠️ 입력 텍스트가 비어 있습니다. 위키 텍스트를 붙여넣어 주세요.';
+      errorMsg.classList.add('show');
+      return;
+    }
+
+    const items = parseChampionDescriptions(input);
+
+    if (items.length === 0) {
+      errorMsg.textContent = '⚠️ 파싱된 항목이 없습니다. "이름: 설명" 형식인지 확인해 주세요.';
+      errorMsg.classList.add('show');
+      return;
+    }
+
+    const outputLines = items.map(item => JSON.stringify(item, null, 0));
+    const fullOutput = outputLines.join(', ');
+
+    document.getElementById('outputBox').value = fullOutput;
+    outputCard.classList.add('visible');
+
+    const charCount = fullOutput.length;
+    document.getElementById('statsBar').innerHTML =
+      '<span class="stat-chip">📦 ' + items.length + '개 항목</span>' +
+      '<span class="stat-chip">📏 ' + charCount.toLocaleString() + '자</span>';
+
+    const preview = document.getElementById('itemsPreview');
+    preview.innerHTML = '<div style="font-size:13px;font-weight:600;color:var(--text-muted);margin-bottom:10px;letter-spacing:0.04em;text-transform:uppercase;">항목 미리보기</div>';
+    items.forEach(function(item, i) {
+      const div = document.createElement('div');
+      div.className = 'item-card';
+      div.style.animationDelay = (i * 0.05) + 's';
+      div.innerHTML =
+        '<div class="item-name">' + escapeHtml(item.name) + '</div>' +
+        '<div class="item-reason">' + escapeHtml(item.reason) + '</div>';
+      preview.appendChild(div);
+    });
+
+    outputCard.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+
+  function copyOutput() {
+    const text = document.getElementById('outputBox').value;
+    if (!text) return;
+    navigator.clipboard.writeText(text).then(function() {
+      const btn = document.getElementById('copyBtn');
+      document.getElementById('copyIcon').textContent = '✅';
+      document.getElementById('copyText').textContent = '복사 완료!';
+      btn.classList.add('copied');
+      setTimeout(function() {
+        btn.classList.remove('copied');
+        document.getElementById('copyIcon').textContent = '📋';
+        document.getElementById('copyText').textContent = '클릭하여 복사';
+      }, 2000);
+    }).catch(function() {
+      const box = document.getElementById('outputBox');
+      box.select();
+      document.execCommand('copy');
+    });
+  }
+
+  function clearAll() {
+    document.getElementById('inputText').value = '';
+    document.getElementById('outputBox').value = '';
+    document.getElementById('outputCard').classList.remove('visible');
+    document.getElementById('errorMsg').classList.remove('show');
+    document.getElementById('itemsPreview').innerHTML = '';
+    document.getElementById('statsBar').innerHTML = '';
+    document.getElementById('inputText').focus();
+  }
+
+  function escapeHtml(str) {
+    return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  }
+
+  document.addEventListener('keydown', function(e) {
+    if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') parse();
+  });
+</script>
+</body>
+</html>
