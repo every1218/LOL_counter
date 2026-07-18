@@ -20,8 +20,6 @@
     <title>롤 챔피언 상성 정리</title>
     <link rel="icon" type="image/png" href="champ_img/icon.png" />
 
-    <!-- Vercel Analytics (정적 HTML용) -->
-    <script defer src="/_vercel/insights/script.js"></script>
     <meta name="description" content="리그 오브 레전드 챔피언 카운터 정보를 빠르게 조회하세요. 하드 카운터, 일반 카운터, 추천 조합을 한눈에 확인할 수 있습니다." />
     <meta name="keywords" content="롤, 리그오브레전드, 카운터, 챔피언, LOL, counter" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -1242,28 +1240,43 @@
         }
 
         /* ── 시너지 hover 팝업 ── */
+        var syHoverCache = {}; // 챔피언별 시너지 HTML 캐시 (반복 네트워크 요청 방지)
+
         function showSyHover(el) {
             var name = el.getAttribute('data-name');
             if (!name) return;
-            var data = championDict[name];
-            if (!data) {
-                var base = stripParenSuffix(name);
-                data = championDict[base];
-            }
-            var synergies = data ? (data.synergy || []) : [];
-            if (!synergies.length) { hideSyHover(); return; }
 
             var panel = document.getElementById('syHoverPanel');
+
+            // ① 캐시에 없을 때만 HTML 생성
+            if (!syHoverCache[name]) {
+                var data = championDict[name];
+                if (!data) {
+                    var base = stripParenSuffix(name);
+                    data = championDict[base];
+                }
+                var synergies = data ? (data.synergy || []) : [];
+                if (!synergies.length) {
+                    syHoverCache[name] = '__empty__';
+                } else {
+                    syHoverCache[name] = synergies.map(function (sname) {
+                        var urls = buildUrls(sname);
+                        var urlsJson = JSON.stringify(urls).replace(/"/g, '&quot;');
+                        var safe = sname.replace(/&/g, '&amp;').replace(/"/g, '&quot;');
+                        return '<img src="' + urls[0] + '" class="sy-img" alt="' + safe
+                            + '" title="' + safe + '" data-urls="' + urlsJson
+                            + '" data-url-idx="0" onerror="handleImgError(this)" />'
+                            + '<div class="sy-fallback" style="display:none;">' + sname.substring(0, 2) + '</div>';
+                    }).join('');
+                }
+            }
+
+            // ② 시너지 없으면 팝업 숨김
+            if (syHoverCache[name] === '__empty__') { hideSyHover(); return; }
+
+            // ③ 캐시된 HTML 재사용 (이미지 재요청 없음)
             document.getElementById('syHoverTitle').textContent = '🤝 ' + name + josaWaGwa(name) + ' 어울리는 챔피언';
-            document.getElementById('syHoverGrid').innerHTML = synergies.map(function (sname) {
-                var urls = buildUrls(sname);
-                var urlsJson = JSON.stringify(urls).replace(/"/g, '&quot;');
-                var safe = sname.replace(/&/g, '&amp;').replace(/"/g, '&quot;');
-                return '<img src="' + urls[0] + '" class="sy-img" alt="' + safe
-                    + '" title="' + safe + '" data-urls="' + urlsJson
-                    + '" data-url-idx="0" onerror="handleImgError(this)" />'
-                    + '<div class="sy-fallback" style="display:none;">' + sname.substring(0, 2) + '</div>';
-            }).join('');
+            document.getElementById('syHoverGrid').innerHTML = syHoverCache[name];
 
             var rect = el.getBoundingClientRect();
             // html { zoom: 0.9 } 보정: 뷰포트 픽셀 → fixed CSS 픽셀 변환
