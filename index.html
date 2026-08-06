@@ -1025,7 +1025,8 @@
         async function loadData() {
             showLoader(true);
             try {
-                var res = await fetch('champ.json');
+                // Cache Busting: champ.json 수정 시 ?v=1.0.1 버전을 변경하여 커밋하면 브라우저 캐시 무시됨
+                var res = await fetch('champ.json?v=1.0.1');
                 if (!res.ok) throw new Error('HTTP ' + res.status);
                 var list = await res.json();
                 list.forEach(function (data) {
