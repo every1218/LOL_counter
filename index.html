@@ -2,6 +2,8 @@
 <html lang="ko" data-theme="light">
 
 <head>
+    <!-- python -m http.server 8080   -->
+    <!-- http://localhost:8080/ -->
     <meta charset="UTF-8" />
     <meta name="google-site-verification" content="uQGqn8VpWizoRPu0Ki5VEgJmi4ZJpa4TcqI0er2ADgI" />
     <meta name="naver-site-verification" content="7ccd4ba2e277631c905fc55754190e7a9ee40f52" />
@@ -36,8 +38,6 @@
             padding: 0;
         }
 
-        /* python -m http.server 8080   */
-        /* http://localhost:8080/ */
         /* ── 다크 모드 (기본) ── */
         :root,
         [data-theme="dark"] {
@@ -915,11 +915,101 @@
         .ac-highlight {
             color: var(--accent-red);
         }
+
+        /* ── 우측 사이드 광고/홍보 배너 ── */
+        .side-banner {
+            position: fixed;
+            top: 40px;
+            right: 40px;
+            z-index: 1000;
+            width: 230px;
+            background: var(--bg-panel);
+            border: 1px solid var(--border-subtle);
+            border-radius: var(--radius-lg);
+            padding: 14px 16px;
+            box-shadow: 0 6px 24px rgba(0, 0, 0, 0.12);
+            text-decoration: none;
+            color: var(--text-primary);
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            transition: all 0.22s cubic-bezier(0.4, 0, 0.2, 1);
+            cursor: pointer;
+        }
+
+        .side-banner:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.22);
+            border-color: var(--accent-red);
+        }
+
+        .side-banner-body {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .side-banner-icon {
+            width: 28px;
+            height: 28px;
+            object-fit: contain;
+            flex-shrink: 0;
+        }
+
+        .side-banner-text {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+            min-width: 0;
+        }
+
+        .side-banner-title {
+            font-size: 13.5px;
+            font-weight: 700;
+            color: var(--text-primary);
+            line-height: 1.35;
+            word-break: keep-all;
+        }
+
+        .side-banner-link {
+            font-size: 12px;
+            font-weight: 700;
+            color: #3182ce;
+            display: inline-flex;
+            align-items: center;
+            gap: 3px;
+            margin-top: 3px;
+        }
+
+        [data-theme="dark"] .side-banner-link {
+            color: #63b3ed;
+        }
+
+        .side-banner:hover .side-banner-link {
+            text-decoration: underline;
+        }
+
+        @media (max-width: 1380px) {
+            .side-banner {
+                display: none !important;
+            }
+        }
     </style>
 </head>
 
 <body>
     <div class="page-wrapper">
+        <!-- 우측 사이드 홍보 배너 (전체화면/대형 화면에서만 우측 상단 표시) -->
+        <a href="https://teamdraft.lol" target="_blank" rel="noopener noreferrer" class="side-banner"
+            aria-label="롤 내전 팀 짜주는 사이트 teamdraft.lol 바로가기">
+            <div class="side-banner-body">
+                <img src="champ_img/draft_icon.png" alt="팀드래프트 아이콘" class="side-banner-icon" />
+                <div class="side-banner-text">
+                    <div class="side-banner-title">롤 내전 팀 자동 배정</div>
+                    <div class="side-banner-link">TeamDraft.lol ↗</div>
+                </div>
+            </div>
+        </a>
 
         <!-- 최상단 바: 테마 토글 -->
         <!-- 테마 토글 삭제됨 (top-row 안으로 이동) -->
