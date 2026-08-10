@@ -917,11 +917,17 @@
         }
 
         /* ── 우측 사이드 광고/홍보 배너 ── */
-        .side-banner {
+        .side-banner-wrap {
             position: fixed;
             top: 40px;
             right: 40px;
             z-index: 1000;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .side-banner {
             width: 230px;
             background: var(--bg-panel);
             border: 1px solid var(--border-subtle);
@@ -956,6 +962,17 @@
             flex-shrink: 0;
         }
 
+        .side-banner-emoji {
+            font-size: 22px;
+            line-height: 1;
+            flex-shrink: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 28px;
+            height: 28px;
+        }
+
         .side-banner-text {
             display: flex;
             flex-direction: column;
@@ -971,6 +988,12 @@
             word-break: keep-all;
         }
 
+        .side-banner-sub {
+            font-size: 11px;
+            color: var(--text-muted);
+            font-weight: 500;
+        }
+
         .side-banner-link {
             font-size: 12px;
             font-weight: 700;
@@ -981,8 +1004,16 @@
             margin-top: 3px;
         }
 
+        .side-banner-link.survey-link {
+            color: #e53e3e;
+        }
+
         [data-theme="dark"] .side-banner-link {
             color: #63b3ed;
+        }
+
+        [data-theme="dark"] .side-banner-link.survey-link {
+            color: #ff6b6b;
         }
 
         .side-banner:hover .side-banner-link {
@@ -990,7 +1021,7 @@
         }
 
         @media (max-width: 1380px) {
-            .side-banner {
+            .side-banner-wrap {
                 display: none !important;
             }
         }
@@ -999,17 +1030,30 @@
 
 <body>
     <div class="page-wrapper">
-        <!-- 우측 사이드 홍보 배너 (전체화면/대형 화면에서만 우측 상단 표시) -->
-        <a href="https://teamdraft.lol" target="_blank" rel="noopener noreferrer" class="side-banner"
-            aria-label="롤 내전 팀 짜주는 사이트 teamdraft.lol 바로가기">
-            <div class="side-banner-body">
-                <img src="champ_img/draft_icon.png" alt="팀드래프트 아이콘" class="side-banner-icon" />
-                <div class="side-banner-text">
-                    <div class="side-banner-title">롤 내전 팀 자동 배정</div>
-                    <div class="side-banner-link">TeamDraft.lol ↗</div>
+        <!-- 우측 사이드 홍보 및 설문 배너 (전체화면/대형 화면에서만 우측 상단 표시) -->
+        <div class="side-banner-wrap">
+            <a href="https://teamdraft.lol" target="_blank" rel="noopener noreferrer" class="side-banner"
+                aria-label="롤 내전 팀 짜주는 사이트 teamdraft.lol 바로가기">
+                <div class="side-banner-body">
+                    <img src="champ_img/draft_icon.png" alt="팀드래프트 아이콘" class="side-banner-icon" />
+                    <div class="side-banner-text">
+                        <div class="side-banner-title">롤 내전 팀 자동 배정</div>
+                        <div class="side-banner-link">TeamDraft.lol ↗</div>
+                    </div>
                 </div>
-            </div>
-        </a>
+            </a>
+
+            <a href="https://forms.gle/XktW4Y2WDKsXMpQYA" target="_blank" rel="noopener noreferrer" class="side-banner"
+                aria-label="LOL_Counter 서비스 개선 설문조사 참여하기">
+                <div class="side-banner-body">
+                    <span class="side-banner-emoji">📋</span>
+                    <div class="side-banner-text">
+                        <div class="side-banner-title">vschamp.lol 설문조사</div>
+                        <div class="side-banner-sub"> 약 1분 소요</div>
+                    </div>
+                </div>
+            </a>
+        </div>
 
         <!-- 최상단 바: 테마 토글 -->
         <!-- 테마 토글 삭제됨 (top-row 안으로 이동) -->
@@ -1115,8 +1159,8 @@
         async function loadData() {
             showLoader(true);
             try {
-                // Cache Busting: champ.json 수정 시 ?v=1.0.1 버전을 변경하여 커밋하면 브라우저 캐시 무시됨
-                var res = await fetch('champ.json?v=1.0.1');
+                // Cache Busting: champ.json 수정 시 ?v=1.0.2 버전을 변경하여 커밋하면 브라우저 캐시 무시됨
+                var res = await fetch('champ.json?v=1.0.2');
                 if (!res.ok) throw new Error('HTTP ' + res.status);
                 var list = await res.json();
                 list.forEach(function (data) {
