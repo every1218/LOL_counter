@@ -102,11 +102,7 @@
             padding: 2rem 1.25rem 4rem;
         }
 
-        /* ── 최상단 바 (테마 토글) ── */
-        .top-bar {
-            display: none;
-            /* 사용 안 함 - 테마 토글은 top-row 안에 위치 */
-        }
+
 
         .theme-toggle {
             display: flex;
@@ -155,6 +151,7 @@
 
         /* ── 검색 패널 ── */
         .search-panel {
+            position: relative;
             display: flex;
             align-items: center;
             gap: 1.25rem;
@@ -165,6 +162,272 @@
             margin-bottom: 2rem;
             box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
             transition: background 0.3s ease, border-color 0.3s ease;
+        }
+
+        /* ── 신고/제보 사이렌 버튼 및 툴팁 ── */
+        .report-btn-wrap {
+            position: absolute;
+            top: 14px;
+            right: 16px;
+            z-index: 5;
+        }
+
+        .report-siren-btn {
+            background: transparent;
+            border: none;
+            font-size: 20px;
+            cursor: pointer;
+            padding: 6px;
+            border-radius: 50%;
+            line-height: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: transform 0.2s ease, background 0.2s ease;
+            position: relative;
+            outline: none;
+        }
+
+        .report-siren-btn:hover {
+            transform: scale(1.15);
+            background: rgba(255, 74, 74, 0.15);
+        }
+
+        .report-btn-tooltip {
+            visibility: hidden;
+            opacity: 0;
+            position: absolute;
+            bottom: calc(100% + 6px);
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--tooltip-bg, rgba(15, 15, 25, 0.92));
+            color: #fff;
+            font-size: 11px;
+            font-weight: 600;
+            padding: 4px 10px;
+            border-radius: 6px;
+            white-space: nowrap;
+            pointer-events: none;
+            transition: opacity 0.2s ease, transform 0.2s ease;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+            border: 1px solid var(--border-subtle);
+            z-index: 10;
+        }
+
+        .report-siren-btn:hover .report-btn-tooltip {
+            visibility: visible;
+            opacity: 1;
+            transform: translateX(-50%) translateY(-3px);
+        }
+
+        /* ── 제보 모달 팝업 ── */
+        .report-modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.72);
+            backdrop-filter: blur(6px);
+            -webkit-backdrop-filter: blur(6px);
+            z-index: 999999;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            animation: modalFadeIn 0.2s ease;
+        }
+
+        .report-modal-overlay.open {
+            display: flex;
+        }
+
+        @keyframes modalFadeIn {
+            from {
+                opacity: 0;
+            }
+
+            to {
+                opacity: 1;
+            }
+        }
+
+        .report-modal-card {
+            background: var(--bg-panel);
+            border: 1px solid var(--border-subtle);
+            border-radius: var(--radius-lg);
+            width: 100%;
+            max-width: 480px;
+            box-shadow: 0 16px 40px rgba(0, 0, 0, 0.35);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            animation: modalSlideUp 0.22s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        @keyframes modalSlideUp {
+            from {
+                transform: translateY(15px) scale(0.97);
+            }
+
+            to {
+                transform: translateY(0) scale(1);
+            }
+        }
+
+        .report-modal-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 16px 20px;
+            border-bottom: 1px solid var(--border-subtle);
+        }
+
+        .report-modal-title {
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        .report-modal-close {
+            background: transparent;
+            border: none;
+            font-size: 24px;
+            color: var(--text-muted);
+            cursor: pointer;
+            line-height: 1;
+            padding: 0;
+            transition: color 0.15s ease;
+        }
+
+        .report-modal-close:hover {
+            color: var(--accent-red);
+        }
+
+        .report-modal-body {
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .report-form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .report-form-label {
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text-secondary);
+        }
+
+        .report-form-input {
+            width: 100%;
+            padding: 10px 14px;
+            border-radius: var(--radius-sm);
+            border: 1px solid var(--border-subtle);
+            background: var(--bg-card);
+            color: var(--text-primary);
+            font-family: inherit;
+            font-size: 13.5px;
+            outline: none;
+            transition: border-color 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .report-form-textarea {
+            width: 100%;
+            min-height: 180px;
+            padding: 12px 14px;
+            border-radius: var(--radius-sm);
+            border: 1px solid var(--border-subtle);
+            background: var(--bg-card);
+            color: var(--text-primary);
+            font-family: inherit;
+            font-size: 13.5px;
+            line-height: 1.5;
+            outline: none;
+            resize: vertical;
+            transition: border-color 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .report-form-input:focus,
+        .report-form-textarea:focus {
+            border-color: var(--accent-red);
+            box-shadow: 0 0 0 3px rgba(255, 74, 74, 0.15);
+        }
+
+        .report-status-msg {
+            font-size: 12.5px;
+            font-weight: 600;
+            display: none;
+            text-align: center;
+            padding: 8px 12px;
+            border-radius: 6px;
+            word-break: keep-all;
+        }
+
+        .report-status-msg.success {
+            display: block;
+            background: rgba(72, 187, 120, 0.15);
+            color: #48bb78;
+            border: 1px solid rgba(72, 187, 120, 0.3);
+        }
+
+        .report-status-msg.error {
+            display: block;
+            background: rgba(245, 101, 101, 0.15);
+            color: #f56565;
+            border: 1px solid rgba(245, 101, 101, 0.3);
+        }
+
+        .report-modal-footer {
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            gap: 10px;
+            padding: 14px 20px;
+            border-top: 1px solid var(--border-subtle);
+            background: rgba(0, 0, 0, 0.05);
+        }
+
+        .report-cancel-btn {
+            padding: 8px 16px;
+            border: 1px solid var(--border-subtle);
+            border-radius: var(--radius-sm);
+            background: transparent;
+            color: var(--text-secondary);
+            font-family: inherit;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.15s ease;
+        }
+
+        .report-cancel-btn:hover {
+            background: var(--bg-card);
+        }
+
+        .report-submit-btn {
+            padding: 8px 18px;
+            border: none;
+            border-radius: var(--radius-sm);
+            background: var(--accent-red);
+            color: #fff;
+            font-family: inherit;
+            font-size: 13px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            box-shadow: 0 2px 10px rgba(255, 74, 74, 0.3);
+        }
+
+        .report-submit-btn:hover {
+            opacity: 0.9;
+            transform: translateY(-1px);
         }
 
         .champ-thumb {
@@ -198,6 +461,68 @@
             display: flex;
             flex-direction: column;
             gap: 0.75rem;
+        }
+
+        /* ── 라인 필터 칩 ── */
+        .line-filter-wrap {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-top: 2px;
+            min-height: 36px;
+            /* 칩 생성 유무와 상관없이 동일한 높이를 유지하여 UI 상하 흔들림 방지 */
+        }
+
+        .line-filter-chips {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .line-chip-btn {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: var(--bg-card);
+            border: 1.5px solid var(--border-subtle);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            padding: 5px;
+            transition: var(--transition);
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+            outline: none;
+        }
+
+        .line-chip-btn img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            filter: opacity(0.55) grayscale(40%);
+            transition: var(--transition);
+            pointer-events: none;
+        }
+
+        .line-chip-btn:hover {
+            border-color: #c8aa6e;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(200, 170, 110, 0.3);
+        }
+
+        .line-chip-btn:hover img {
+            filter: opacity(1) grayscale(0%);
+        }
+
+        .line-chip-btn.active {
+            background: #1c1e24;
+            border-color: #c8aa6e;
+            box-shadow: 0 0 10px rgba(200, 170, 110, 0.5);
+            transform: scale(1.06);
+        }
+
+        .line-chip-btn.active img {
+            filter: opacity(1) grayscale(0%);
         }
 
         .search-label {
@@ -375,8 +700,33 @@
             text-align: center;
         }
 
-        .hc-card.active .hc-label {
-            color: var(--accent-red);
+        /* ── 라인 뱃지 ── */
+        .card-img-wrap {
+            position: relative;
+            display: inline-block;
+            line-height: 0;
+        }
+
+        .line-badge {
+            position: absolute;
+            top: -3px;
+            right: -3px;
+            width: 18px;
+            height: 18px;
+            background: #1c1e24;
+            border: 1.5px solid #c8aa6e;
+            border-radius: 50%;
+            padding: 2px;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.4);
+            z-index: 3;
+            pointer-events: none;
+            object-fit: contain;
+        }
+
+        [data-theme="light"] .line-badge {
+            background: #1c1e24;
+            border: 1.5px solid #c8aa6e;
+            box-shadow: 0 2px 8px rgba(200, 170, 110, 0.4);
         }
 
         /* ── 하드카운터 설명 패널 ── */
@@ -538,9 +888,9 @@
             background: var(--bg-card);
             border: 1px solid var(--border-subtle);
             border-radius: 10px;
-            padding: 8px 8px 6px;
+            padding: 7px 5px 6px;
             text-align: center;
-            width: 136px;
+            width: 115px;
             transition: var(--transition);
         }
 
@@ -559,16 +909,16 @@
         }
 
         .cc-img {
-            width: 46px;
-            height: 46px;
+            width: 40px;
+            height: 40px;
             border-radius: 50%;
             border: 2px solid var(--gc-border);
             object-fit: cover;
         }
 
         .cc-fallback {
-            width: 46px;
-            height: 46px;
+            width: 40px;
+            height: 40px;
             border-radius: 50%;
             border: 2px solid var(--gc-border);
             background: var(--gc-bg);
@@ -576,18 +926,18 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 10px;
+            font-size: 9.5px;
             font-weight: 700;
         }
 
         .cc-plus {
-            font-size: 13px;
+            font-size: 12px;
             font-weight: 700;
             color: var(--text-muted);
         }
 
         .cc-label {
-            margin-top: 6px;
+            margin-top: 5px;
             font-size: 11px;
             font-weight: 600;
             color: var(--text-muted);
@@ -762,59 +1112,7 @@
         }
 
         /* ── 초기 화면 전용 푸터 (fixed, 최하단) ── */
-        .initial-footer {
-            position: fixed;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            padding: 0.6rem 1rem;
-            text-align: center;
-            background: transparent;
-            pointer-events: none;
-        }
 
-        .footer-line {
-            font-size: 11px;
-            color: var(--text-muted);
-            line-height: 1.7;
-            pointer-events: auto;
-        }
-
-        .footer-line a {
-            color: var(--text-muted);
-            text-decoration: none;
-        }
-
-        .footer-line a:hover {
-            color: var(--accent-red);
-            text-decoration: underline;
-        }
-
-        /* 복사 이메일 */
-        .copy-email {
-            cursor: pointer;
-            color: var(--text-muted);
-            text-decoration: underline dotted;
-            transition: color 0.2s;
-        }
-
-        .copy-email:hover {
-            color: var(--accent-red);
-        }
-
-        .copy-toast {
-            display: inline-block;
-            opacity: 0;
-            margin-left: 6px;
-            font-size: 10px;
-            color: #4caf50;
-            transition: opacity 0.3s;
-            pointer-events: none;
-        }
-
-        .copy-toast.show {
-            opacity: 1;
-        }
 
         /* ── 자동완성 드롭다운 ── */
         .autocomplete-wrap {
@@ -1004,24 +1302,194 @@
             margin-top: 3px;
         }
 
-        .side-banner-link.survey-link {
-            color: #e53e3e;
-        }
-
         [data-theme="dark"] .side-banner-link {
             color: #63b3ed;
-        }
-
-        [data-theme="dark"] .side-banner-link.survey-link {
-            color: #ff6b6b;
         }
 
         .side-banner:hover .side-banner-link {
             text-decoration: underline;
         }
 
+        /* ── 좌측 이동용 전체 챔피언 사이드바 ── */
+        .left-nav-sidebar {
+            position: fixed;
+            top: 40px;
+            left: 24px;
+            width: 295px;
+            max-height: calc(100vh - 80px);
+            background: var(--bg-panel);
+            border: 1px solid var(--border-subtle);
+            border-radius: var(--radius-lg);
+            padding: 12px;
+            box-shadow: 0 6px 24px rgba(0, 0, 0, 0.12);
+            z-index: 1000;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            transition: background 0.3s ease, border-color 0.3s ease;
+        }
+
+        .nav-header {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid var(--border-subtle);
+        }
+
+        .nav-title-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .nav-title {
+            font-size: 13px;
+            font-weight: 700;
+            color: var(--text-secondary);
+        }
+
+        .nav-count {
+            font-size: 11px;
+            font-weight: 600;
+            color: var(--text-muted);
+        }
+
+        .nav-line-buttons {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 4px;
+            background: var(--bg-card);
+            padding: 4px;
+            border-radius: var(--radius-sm);
+            border: 1px solid var(--border-subtle);
+        }
+
+        .nav-line-btn {
+            flex: 1;
+            height: 28px;
+            border-radius: 6px;
+            background: transparent;
+            border: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            padding: 3px;
+            transition: var(--transition);
+        }
+
+        .nav-line-btn img {
+            width: 18px;
+            height: 18px;
+            object-fit: contain;
+            filter: opacity(0.5) grayscale(50%);
+            transition: var(--transition);
+            pointer-events: none;
+        }
+
+        .nav-line-btn:hover img {
+            filter: opacity(0.9) grayscale(0%);
+            transform: scale(1.1);
+        }
+
+        .nav-line-btn.active {
+            background: var(--accent-red);
+            box-shadow: 0 2px 6px rgba(255, 74, 74, 0.3);
+        }
+
+        [data-theme="light"] .nav-line-btn.active {
+            box-shadow: 0 2px 6px rgba(229, 62, 62, 0.3);
+        }
+
+        .nav-line-btn.active img {
+            filter: brightness(0) invert(1);
+        }
+
+        .nav-champ-list-wrap {
+            flex: 1;
+            overflow-y: auto;
+            display: grid;
+            grid-template-columns: repeat(6, 1fr);
+            gap: 5px;
+            padding-right: 2px;
+            scrollbar-width: thin;
+            scrollbar-color: rgba(255, 74, 74, 0.3) transparent;
+        }
+
+        .nav-champ-item {
+            position: relative;
+            width: 100%;
+            aspect-ratio: 1;
+            border-radius: 6px;
+            overflow: hidden;
+            border: 1.5px solid var(--border-subtle);
+            cursor: pointer;
+            transition: transform 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease;
+            background: var(--bg-card);
+        }
+
+        .nav-champ-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+
+        .nav-champ-fallback {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 10px;
+            font-weight: 700;
+            color: var(--text-muted);
+            background: var(--gc-bg);
+        }
+
+        .nav-champ-item:hover {
+            transform: scale(1.08);
+            border-color: #c8aa6e;
+            box-shadow: 0 2px 8px rgba(200, 170, 110, 0.4);
+            z-index: 2;
+        }
+
+        .nav-champ-item.active {
+            border-color: var(--accent-red);
+            box-shadow: 0 0 10px rgba(255, 74, 74, 0.6);
+            transform: scale(1.05);
+            z-index: 2;
+        }
+
+        .nav-champ-tooltip {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: rgba(0, 0, 0, 0.75);
+            color: #fff;
+            font-size: 9px;
+            font-weight: 600;
+            text-align: center;
+            padding: 1px 0;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            opacity: 0;
+            transition: opacity 0.15s ease;
+            pointer-events: none;
+        }
+
+        .nav-champ-item:hover .nav-champ-tooltip {
+            opacity: 1;
+        }
+
         @media (max-width: 1380px) {
-            .side-banner-wrap {
+
+            .side-banner-wrap,
+            .left-nav-sidebar {
                 display: none !important;
             }
         }
@@ -1030,6 +1498,43 @@
 
 <body>
     <div class="page-wrapper">
+        <!-- 좌측 사이드 전체 챔피언 이동 패널 (전체화면/대형 화면 전용) -->
+        <aside class="left-nav-sidebar" id="leftNavSidebar" aria-label="전체 챔피언 이동 패널">
+            <div class="nav-header">
+                <div class="nav-title-row">
+                    <span class="nav-title">⚡ 챔피언 빠른 이동</span>
+                    <span class="nav-count" id="navChampCount"></span>
+                </div>
+                <div class="nav-line-buttons" id="navLineButtons">
+                    <button class="nav-line-btn active" data-line="전체" title="전체" onclick="filterNavLine('전체')">
+                        <img src="https://raw.communitydragon.org/latest/plugins/rcp-fe-lol-clash/global/default/assets/images/position-selector/positions/icon-position-fill.png"
+                            alt="전체" />
+                    </button>
+                    <button class="nav-line-btn" data-line="탑" title="탑" onclick="filterNavLine('탑')">
+                        <img src="https://raw.communitydragon.org/latest/plugins/rcp-fe-lol-clash/global/default/assets/images/position-selector/positions/icon-position-top.png"
+                            alt="탑" />
+                    </button>
+                    <button class="nav-line-btn" data-line="정글" title="정글" onclick="filterNavLine('정글')">
+                        <img src="https://raw.communitydragon.org/latest/plugins/rcp-fe-lol-clash/global/default/assets/images/position-selector/positions/icon-position-jungle.png"
+                            alt="정글" />
+                    </button>
+                    <button class="nav-line-btn" data-line="미드" title="미드" onclick="filterNavLine('미드')">
+                        <img src="https://raw.communitydragon.org/latest/plugins/rcp-fe-lol-clash/global/default/assets/images/position-selector/positions/icon-position-middle.png"
+                            alt="미드" />
+                    </button>
+                    <button class="nav-line-btn" data-line="원딜" title="원딜" onclick="filterNavLine('원딜')">
+                        <img src="https://raw.communitydragon.org/latest/plugins/rcp-fe-lol-clash/global/default/assets/images/position-selector/positions/icon-position-bottom.png"
+                            alt="원딜" />
+                    </button>
+                    <button class="nav-line-btn" data-line="서폿" title="서폿" onclick="filterNavLine('서폿')">
+                        <img src="https://raw.communitydragon.org/latest/plugins/rcp-fe-lol-clash/global/default/assets/images/position-selector/positions/icon-position-utility.png"
+                            alt="서폿" />
+                    </button>
+                </div>
+            </div>
+            <div class="nav-champ-list-wrap" id="navChampGrid"></div>
+        </aside>
+
         <!-- 우측 사이드 홍보 및 설문 배너 (전체화면/대형 화면에서만 우측 상단 표시) -->
         <div class="side-banner-wrap">
             <a href="https://teamdraft.lol" target="_blank" rel="noopener noreferrer" class="side-banner"
@@ -1043,21 +1548,9 @@
                 </div>
             </a>
 
-            <a href="https://forms.gle/XktW4Y2WDKsXMpQYA" target="_blank" rel="noopener noreferrer" class="side-banner"
-                aria-label="LOL_Counter 서비스 개선 설문조사 참여하기">
-                <div class="side-banner-body">
-                    <span class="side-banner-emoji">📋</span>
-                    <div class="side-banner-text">
-                        <div class="side-banner-title">vschamp.lol 설문조사</div>
-                        <div class="side-banner-sub"> 약 1분 소요</div>
-                    </div>
-                </div>
-            </a>
         </div>
 
-        <!-- 최상단 바: 테마 토글 -->
-        <!-- 테마 토글 삭제됨 (top-row 안으로 이동) -->
-        <div class="top-bar"></div>
+
 
 
 
@@ -1065,12 +1558,18 @@
         <div class="top-row">
             <!-- 검색 패널 -->
             <section class="search-panel" aria-label="챔피언 검색">
+                <div class="report-btn-wrap">
+                    <button type="button" class="report-siren-btn" onclick="openReportModal()" aria-label="상성 제보하기">
+                        🚨
+                        <span class="report-btn-tooltip">상성 제보하기</span>
+                    </button>
+                </div>
                 <div class="champ-thumb">
                     <img id="champThumbImg" src="champ_img/초기이미지창.png" alt="챔피언 이미지" />
                     <div class="thumb-fallback" id="champThumbFallback" style="display:none;">⚔️</div>
                 </div>
                 <div class="search-form">
-                    <label class="search-label" for="champInput">카운터 정보를 알고 싶은 챔피언을 입력하세요:</label>
+                    <label class="search-label" for="champInput">카운터 정보를 알고 싶은 챔피언을 입력하세요</label>
                     <div class="search-row">
                         <div class="autocomplete-wrap">
                             <input type="text" id="champInput" class="search-input" placeholder="예: 가렌, 갱플, 아리 ..."
@@ -1078,6 +1577,9 @@
                             <div class="autocomplete-list" id="autocompleteList"></div>
                         </div>
                         <button id="searchBtn" class="search-btn">조회하기</button>
+                    </div>
+                    <div class="line-filter-wrap" id="lineFilterWrap">
+                        <div class="line-filter-chips" id="lineFilterChips"></div>
                     </div>
                 </div>
             </section>
@@ -1130,13 +1632,7 @@
         <div class="sy-hover-grid" id="syHoverGrid"></div>
     </div>
 
-    <!-- 초기 화면 전용 푸터 (fixed, 페이지 최하단) -->
-    <footer id="initialFooter" class="initial-footer">
-        <p class="footer-line">오류제보 및 건의 :
-            <span class="copy-email" id="copyEmailBtn" onclick="copyEmail()">vschamplol@gmail.com</span>
-            <span class="copy-toast" id="copyToast">복사됨</span>
-        </p>
-    </footer>
+
     <script>
         var championDict = {};
         var activeHcCard = null;
@@ -1155,20 +1651,96 @@
             setTheme(saved);
         })();
 
+        /* ── 좌측 이동용 전체 챔피언 사이드바 변수 & 함수 ── */
+        var allChampionsList = [];
+        var navLineFilter = '전체';
+
+        function renderNavSidebar() {
+            var grid = document.getElementById('navChampGrid');
+            var countEl = document.getElementById('navChampCount');
+            if (!grid) return;
+
+            var filtered = allChampionsList.filter(function (data) {
+                if (!navLineFilter || navLineFilter === '전체') return true;
+                var lines = data.lines || [];
+                if (navLineFilter === '원딜') {
+                    return lines.indexOf('원딜') !== -1 || lines.indexOf('바텀') !== -1;
+                }
+                if (navLineFilter === '서폿') {
+                    return lines.indexOf('서폿') !== -1 || lines.indexOf('서포터') !== -1;
+                }
+                return lines.indexOf(navLineFilter) !== -1;
+            });
+
+            if (countEl) {
+                countEl.textContent = filtered.length + '명';
+            }
+
+            if (!filtered.length) {
+                grid.innerHTML = '<p style="grid-column: 1 / -1; font-size: 11px; color: var(--text-muted); text-align: center; padding: 16px 0;">해당 라인 챔피언 없음</p>';
+                return;
+            }
+
+            var currentChampName = currentChampData ? currentChampData.champion : '';
+
+            grid.innerHTML = filtered.map(function (data) {
+                var cname = data.champion;
+                var urls = buildUrls(cname);
+                var urlsJson = JSON.stringify(urls).replace(/"/g, '&quot;');
+                var nameEsc = cname.replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+                var isActive = (currentChampName === cname);
+                var activeClass = isActive ? ' active' : '';
+
+                return '<div class="nav-champ-item' + activeClass + '" data-champion="' + nameEsc + '" title="' + nameEsc
+                    + '" onclick="onNavChampClick(\'' + nameEsc + '\')">'
+                    + '<img src="' + urls[0] + '" alt="' + nameEsc + '" data-urls="' + urlsJson + '" data-url-idx="0" onerror="handleImgError(this)" />'
+                    + '<div class="nav-champ-fallback" style="display:none;">' + cname.substring(0, 2) + '</div>'
+                    + '<div class="nav-champ-tooltip">' + cname + '</div>'
+                    + '</div>';
+            }).join('');
+        }
+
+        function filterNavLine(line) {
+            navLineFilter = line;
+            var btns = document.querySelectorAll('.nav-line-btn');
+            btns.forEach(function (btn) {
+                btn.classList.toggle('active', btn.getAttribute('data-line') === line);
+            });
+            renderNavSidebar();
+        }
+
+        function onNavChampClick(champName) {
+            document.getElementById('champInput').value = champName;
+            search();
+        }
+
+        function updateNavActiveState(champName) {
+            var items = document.querySelectorAll('.nav-champ-item');
+            items.forEach(function (el) {
+                var name = el.getAttribute('data-champion');
+                var isActive = (name === champName);
+                el.classList.toggle('active', isActive);
+            });
+        }
+
         /* ── 데이터 로드 ── */
         async function loadData() {
             showLoader(true);
             try {
-                // Cache Busting: champ.json 수정 시 ?v=1.0.2 버전을 변경하여 커밋하면 브라우저 캐시 무시됨
-                var res = await fetch('champ.json?v=1.0.2');
+                // Cache Busting: champ.json 수정 시 ?v=1.0.3 버전을 변경하여 커밋하면 브라우저 캐시 무시됨
+                var res = await fetch('champ.json?v=1.0.3');
                 if (!res.ok) throw new Error('HTTP ' + res.status);
                 var list = await res.json();
+                allChampionsList = list.slice().sort(function (a, b) {
+                    return a.champion.localeCompare(b.champion, 'ko');
+                });
                 list.forEach(function (data) {
                     championDict[data.champion] = data;
                     (data.aliases || []).forEach(function (alias) {
                         if (alias) championDict[alias] = data;
                     });
                 });
+                renderNavSidebar();
             } catch (e) {
                 showAlert('error', '오류: 데이터 파일(champ.json)을 불러올 수 없습니다. (' + e.message + ')');
             } finally {
@@ -1237,6 +1809,228 @@
                 + '<div class="' + fallbackCss + '" style="display:none;">' + (fallbackText || name) + '</div>';
         }
 
+        /* ── 한영 변환 & 초성 검색 유틸리티 ── */
+        var CHO_LIST = ['ㄱ', 'ㄲ', 'ㄴ', 'ㄷ', 'ㄸ', 'ㄹ', 'ㅁ', 'ㅂ', 'ㅃ', 'ㅅ', 'ㅆ', 'ㅇ', 'ㅈ', 'ㅉ', 'ㅊ', 'ㅋ', 'ㅌ', 'ㅍ', 'ㅎ'];
+        var JUNG_LIST = ['ㅏ', 'ㅐ', 'ㅑ', 'ㅒ', 'ㅓ', 'ㅔ', 'ㅕ', 'ㅖ', 'ㅗ', 'ㅘ', 'ㅙ', 'ㅚ', 'ㅛ', 'ㅜ', 'ㅝ', 'ㅞ', 'ㅟ', 'ㅠ', 'ㅡ', 'ㅢ', 'ㅣ'];
+
+        var CHO_MAP = { 'r': 0, 'R': 1, 's': 2, 'e': 3, 'E': 4, 'f': 5, 'a': 6, 'q': 7, 'Q': 8, 't': 9, 'T': 10, 'd': 11, 'w': 12, 'W': 13, 'c': 14, 'z': 15, 'x': 16, 'v': 17, 'g': 18 };
+        var JUNG_MAP = { 'k': 0, 'o': 1, 'i': 2, 'O': 3, 'j': 4, 'p': 5, 'u': 6, 'P': 7, 'h': 8, 'y': 12, 'n': 13, 'b': 17, 'm': 18, 'l': 20 };
+        var COMB_JUNG = {
+            '8,0': 9, '8,1': 10, '8,20': 11,
+            '13,4': 14, '13,5': 15, '13,20': 16,
+            '18,20': 19
+        };
+        var JONG_MAP = {
+            'r': 1, 'R': 2, 's': 4, 'e': 7, 'f': 8, 'a': 16, 'q': 17, 't': 19, 'T': 20, 'd': 21, 'w': 22, 'c': 23, 'z': 24, 'x': 25, 'v': 26, 'g': 27
+        };
+        var COMB_JONG = {
+            '1,19': 3, '4,22': 5, '4,27': 6,
+            '8,1': 9, '8,16': 10, '8,17': 11, '8,19': 12, '8,25': 13, '8,26': 14, '8,27': 15,
+            '17,19': 18
+        };
+
+        function getChoseong(text) {
+            if (!text) return '';
+            var res = [];
+            for (var i = 0; i < text.length; i++) {
+                var code = text.charCodeAt(i);
+                if (code >= 0xAC00 && code <= 0xD7A3) {
+                    res.push(CHO_LIST[Math.floor((code - 0xAC00) / 588)]);
+                } else {
+                    res.push(text.charAt(i));
+                }
+            }
+            return res.join('');
+        }
+
+        function engToKor(src) {
+            if (!src) return '';
+            var res = [];
+            var state = 0;
+            var cIdx = -1, vIdx = -1, jIdx = 0;
+
+            function makeSyllable(c, v, j) {
+                if (c !== -1 && v !== -1) {
+                    return String.fromCharCode(0xAC00 + c * 588 + v * 28 + j);
+                } else if (c !== -1) {
+                    return CHO_LIST[c];
+                } else if (v !== -1) {
+                    return JUNG_LIST[v];
+                }
+                return '';
+            }
+
+            var i = 0;
+            while (i < src.length) {
+                var ch = src.charAt(i);
+                var isCho = ch in CHO_MAP;
+                var isJung = ch in JUNG_MAP;
+
+                if (!isCho && !isJung) {
+                    if (state !== 0) {
+                        res.push(makeSyllable(cIdx, vIdx, jIdx));
+                        state = 0; cIdx = -1; vIdx = -1; jIdx = 0;
+                    }
+                    res.push(ch);
+                    i++;
+                    continue;
+                }
+
+                if (state === 0) {
+                    if (isCho) { cIdx = CHO_MAP[ch]; state = 1; }
+                    else if (isJung) { vIdx = JUNG_MAP[ch]; state = 2; }
+                } else if (state === 1) {
+                    if (isJung) { vIdx = JUNG_MAP[ch]; state = 2; }
+                    else {
+                        res.push(makeSyllable(cIdx, -1, 0));
+                        cIdx = CHO_MAP[ch]; state = 1;
+                    }
+                } else if (state === 2) {
+                    if (isJung) {
+                        var cKey = vIdx + ',' + JUNG_MAP[ch];
+                        if (cKey in COMB_JUNG) {
+                            vIdx = COMB_JUNG[cKey];
+                        } else {
+                            res.push(makeSyllable(cIdx, vIdx, 0));
+                            cIdx = -1; vIdx = JUNG_MAP[ch]; state = 2;
+                        }
+                    } else if (isCho) {
+                        if (cIdx !== -1 && ch in JONG_MAP) {
+                            jIdx = JONG_MAP[ch]; state = 3;
+                        } else {
+                            res.push(makeSyllable(cIdx, vIdx, 0));
+                            cIdx = CHO_MAP[ch]; vIdx = -1; jIdx = 0; state = 1;
+                        }
+                    }
+                } else if (state === 3) {
+                    if (isJung) {
+                        var prevJ = 0, nextC = -1, foundSplit = false;
+                        for (var key in COMB_JONG) {
+                            if (COMB_JONG[key] === jIdx) {
+                                var parts = key.split(',');
+                                prevJ = parseInt(parts[0]);
+                                var j2 = parseInt(parts[1]);
+                                for (var charKey in JONG_MAP) {
+                                    if (JONG_MAP[charKey] === j2 && charKey in CHO_MAP) {
+                                        nextC = CHO_MAP[charKey];
+                                        break;
+                                    }
+                                }
+                                foundSplit = true; break;
+                            }
+                        }
+                        if (!foundSplit) {
+                            prevJ = 0;
+                            for (var charKey in JONG_MAP) {
+                                if (JONG_MAP[charKey] === jIdx && charKey in CHO_MAP) {
+                                    nextC = CHO_MAP[charKey];
+                                    break;
+                                }
+                            }
+                        }
+                        res.push(makeSyllable(cIdx, vIdx, prevJ));
+                        cIdx = nextC; vIdx = JUNG_MAP[ch]; jIdx = 0; state = 2;
+                    } else if (isCho) {
+                        var canComb = false;
+                        if (ch in JONG_MAP) {
+                            var j2Val = JONG_MAP[ch];
+                            var combKey = jIdx + ',' + j2Val;
+                            if (combKey in COMB_JONG) {
+                                jIdx = COMB_JONG[combKey];
+                                canComb = true;
+                            }
+                        }
+                        if (!canComb) {
+                            res.push(makeSyllable(cIdx, vIdx, jIdx));
+                            cIdx = CHO_MAP[ch]; vIdx = -1; jIdx = 0; state = 1;
+                        }
+                    }
+                }
+                i++;
+            }
+            if (state !== 0) {
+                res.push(makeSyllable(cIdx, vIdx, jIdx));
+            }
+            return res.join('');
+        }
+
+        function searchChampions(query) {
+            if (!query) return [];
+            var rawQ = query.trim().toLowerCase();
+            var convQ = engToKor(query.trim()).toLowerCase();
+
+            var seen = {};
+            var matches = [];
+
+            Object.keys(championDict).forEach(function (key) {
+                var data = championDict[key];
+                var cname = data.champion;
+                if (seen[cname]) return;
+
+                var aliases = data.aliases || [];
+                var allNames = [cname].concat(aliases);
+
+                var score = 999;
+                var matchedAlias = null;
+
+                for (var i = 0; i < allNames.length; i++) {
+                    var name = allNames[i];
+                    var nLow = name.toLowerCase();
+                    var nNoSpace = nLow.replace(/\s+/g, '');
+                    var rawNoSpace = rawQ.replace(/\s+/g, '');
+                    var convNoSpace = convQ.replace(/\s+/g, '');
+
+                    var isAlias = (name !== cname);
+
+                    if (nLow === rawQ || nNoSpace === rawNoSpace) {
+                        score = Math.min(score, isAlias ? 2 : 1);
+                        if (isAlias) matchedAlias = name;
+                    } else if (nLow === convQ || nNoSpace === convNoSpace) {
+                        score = Math.min(score, isAlias ? 2 : 1);
+                        if (isAlias) matchedAlias = name;
+                    } else if (nLow.indexOf(rawQ) === 0 || nNoSpace.indexOf(rawNoSpace) === 0) {
+                        score = Math.min(score, isAlias ? 4 : 3);
+                        if (isAlias) matchedAlias = name;
+                    } else if (nLow.indexOf(convQ) === 0 || nNoSpace.indexOf(convNoSpace) === 0) {
+                        score = Math.min(score, isAlias ? 4 : 3);
+                        if (isAlias) matchedAlias = name;
+                    } else if (nLow.indexOf(rawQ) !== -1 || nNoSpace.indexOf(rawNoSpace) !== -1) {
+                        score = Math.min(score, isAlias ? 6 : 5);
+                        if (isAlias) matchedAlias = name;
+                    } else if (nLow.indexOf(convQ) !== -1 || nNoSpace.indexOf(convNoSpace) !== -1) {
+                        score = Math.min(score, isAlias ? 6 : 5);
+                        if (isAlias) matchedAlias = name;
+                    }
+
+                    var cho = getChoseong(name).toLowerCase();
+                    var choNoSpace = cho.replace(/\s+/g, '');
+
+                    if (rawNoSpace && choNoSpace.indexOf(rawNoSpace) !== -1) {
+                        var isPrefix = choNoSpace.indexOf(rawNoSpace) === 0;
+                        score = Math.min(score, isPrefix ? (isAlias ? 8 : 7) : (isAlias ? 10 : 9));
+                        if (isAlias) matchedAlias = name;
+                    }
+                    if (convNoSpace && choNoSpace.indexOf(convNoSpace) !== -1) {
+                        var isPrefixConv = choNoSpace.indexOf(convNoSpace) === 0;
+                        score = Math.min(score, isPrefixConv ? (isAlias ? 8 : 7) : (isAlias ? 10 : 9));
+                        if (isAlias) matchedAlias = name;
+                    }
+                }
+
+                if (score < 999) {
+                    seen[cname] = true;
+                    matches.push({ data: data, score: score, matchedAlias: matchedAlias });
+                }
+            });
+
+            matches.sort(function (a, b) {
+                if (a.score !== b.score) return a.score - b.score;
+                return a.data.champion.localeCompare(b.data.champion);
+            });
+
+            return matches;
+        }
+
         /* ── 검색 ── */
         function search() {
             var query = document.getElementById('champInput').value.trim();
@@ -1246,13 +2040,31 @@
             var acList = document.getElementById('autocompleteList');
             if (acList) { acList.classList.remove('open'); acList.innerHTML = ''; }
             if (!query) { showAlert('warning', '챔피언 이름을 입력해주세요.'); return; }
+
             var data = championDict[query];
+            if (!data) {
+                var conv = engToKor(query);
+                if (conv) data = championDict[conv];
+            }
+            if (!data) {
+                var matches = searchChampions(query);
+                if (matches.length > 0) {
+                    data = matches[0].data;
+                    document.getElementById('champInput').value = data.champion;
+                }
+            }
+
             if (!data) { showAlert('error', "'" + query + "'에 대한 데이터를 찾을 수 없습니다. 챔피언 이름(별칭 포함)을 다시 확인해주세요."); return; }
             renderResults(data);
         }
 
+        /* ── 라인 필터 칩 상태 ── */
+        var currentChampData = null;
+        var activeLineFilter = '전체';
+
         /* ── 결과 렌더링 ── */
         function renderResults(data) {
+            currentChampData = data;
             var champName = data.champion || '';
             var thumbImg = document.getElementById('champThumbImg');
             var thumbFb = document.getElementById('champThumbFallback');
@@ -1264,33 +2076,215 @@
             thumbImg.onerror = function () { handleImgError(this); };
             thumbImg.src = urls[0];
 
-            renderHardCounters(data.hard_counters || []);
-            renderGeneralCounters(data.general_counters || []);
-            renderCombos(data.combo_counters || []);
+            renderLineFilters(data);
+            updateFilteredCounters();
+
             renderSynergy(data.synergy || [], champName);
             resetInfoPanel();
+            updateNavActiveState(champName);
             document.getElementById('results-section').classList.add('show');
             document.getElementById('results-section').scrollIntoView({ behavior: 'smooth', block: 'start' });
 
-            // 조회 후 잔기 화면 푸터 숨김
-            document.getElementById('initialFooter').style.display = 'none';
             // 조회 후 테마 토글 숨김
             document.getElementById('themeToggleWrap').style.display = 'none';
         }
 
+        /* ── 포지션 라인 뱃지 아이콘 ── */
+        var POSITION_ICONS = {
+            'top': 'https://raw.communitydragon.org/latest/plugins/rcp-fe-lol-clash/global/default/assets/images/position-selector/positions/icon-position-top.png',
+            'jungle': 'https://raw.communitydragon.org/latest/plugins/rcp-fe-lol-clash/global/default/assets/images/position-selector/positions/icon-position-jungle.png',
+            'mid': 'https://raw.communitydragon.org/latest/plugins/rcp-fe-lol-clash/global/default/assets/images/position-selector/positions/icon-position-middle.png',
+            'adc': 'https://raw.communitydragon.org/latest/plugins/rcp-fe-lol-clash/global/default/assets/images/position-selector/positions/icon-position-bottom.png',
+            'support': 'https://raw.communitydragon.org/latest/plugins/rcp-fe-lol-clash/global/default/assets/images/position-selector/positions/icon-position-utility.png',
+            'all': 'https://raw.communitydragon.org/latest/plugins/rcp-fe-lol-clash/global/default/assets/images/position-selector/positions/icon-position-fill.png'
+        };
+
+        var LINE_ICON_MAP = {
+            '탑': POSITION_ICONS.top,
+            '정글': POSITION_ICONS.jungle,
+            '미드': POSITION_ICONS.mid,
+            '원딜': POSITION_ICONS.adc,
+            '바텀': POSITION_ICONS.adc,
+            '서폿': POSITION_ICONS.support,
+            '서포터': POSITION_ICONS.support,
+            '전체': POSITION_ICONS.all
+        };
+
+        function getLineTagInfo(rawName) {
+            if (!rawName) return { rawName: '', cleanName: '', lineTag: '', lineTags: [], iconUrl: '' };
+            var cleanName = stripParenSuffix(rawName);
+            var match = rawName.match(/\((.*?)\)/);
+            if (match) {
+                var lineTag = match[1].trim();
+                // 괄호 안에 여러 라인이 쉼표/슬래시 등으로 적혀있는 경우 분리 (예: "정글, 서폿" -> ["정글", "서폿"])
+                var lineTags = lineTag.split(/[,/]/).map(function (s) { return s.trim(); }).filter(Boolean);
+                var primaryTag = lineTags[0] || lineTag;
+                var iconUrl = LINE_ICON_MAP[primaryTag] || '';
+                return { rawName: rawName, cleanName: cleanName, lineTag: lineTag, lineTags: lineTags, iconUrl: iconUrl };
+            }
+            return { rawName: rawName, cleanName: cleanName, lineTag: '', lineTags: [], iconUrl: '' };
+        }
+
+        /* ── 라인 필터 칩 렌더링 & 이벤트 ── */
+        function renderLineFilters(data) {
+            var container = document.getElementById('lineFilterChips');
+            if (!container) return;
+
+            var lines = data.lines || [];
+            if (!lines.length) {
+                container.innerHTML = '';
+                return;
+            }
+
+            var html = '';
+            if (lines.length === 1) {
+                activeLineFilter = lines[0];
+                var line = lines[0];
+                var iconUrl = LINE_ICON_MAP[line] || POSITION_ICONS.all;
+                html += '<button class="line-chip-btn active" data-line="' + line + '" title="' + line + '" onclick="onLineChipClick(this)">'
+                    + '<img src="' + iconUrl + '" alt="' + line + '" />'
+                    + '</button>';
+            } else {
+                activeLineFilter = '전체';
+                // 1) 전체 칩 (기본 선택)
+                html += '<button class="line-chip-btn active" data-line="전체" title="전체" onclick="onLineChipClick(this)">'
+                    + '<img src="' + POSITION_ICONS.all + '" alt="전체" />'
+                    + '</button>';
+                // 2) 각 라인 칩
+                lines.forEach(function (line) {
+                    var iconUrl = LINE_ICON_MAP[line] || POSITION_ICONS.all;
+                    html += '<button class="line-chip-btn" data-line="' + line + '" title="' + line + '" onclick="onLineChipClick(this)">'
+                        + '<img src="' + iconUrl + '" alt="' + line + '" />'
+                        + '</button>';
+                });
+            }
+
+            container.innerHTML = html;
+        }
+
+        function onLineChipClick(btn) {
+            var line = btn.getAttribute('data-line');
+            if (!line) return;
+            activeLineFilter = line;
+
+            var chips = document.querySelectorAll('.line-chip-btn');
+            chips.forEach(function (c) {
+                c.classList.toggle('active', c.getAttribute('data-line') === line);
+            });
+
+            updateFilteredCounters();
+        }
+
+        function filterCountersByLine(countersList, selectedLine) {
+            if (!countersList || !countersList.length) return [];
+            if (!selectedLine || selectedLine === '전체') {
+                return countersList;
+            }
+
+            // 단일 라인 챔피언(lines가 1개)인 경우, 타 라인 카운터도 모두 보여주어야 하므로 걸러내지 않음!
+            if (currentChampData && currentChampData.lines && currentChampData.lines.length === 1) {
+                return countersList;
+            }
+
+            return countersList.filter(function (item) {
+                var rawName = (typeof item === 'string') ? item : (item.name || '');
+                var parsed = getLineTagInfo(rawName);
+                var tags = parsed.lineTags || [];
+
+                // 괄호 태그가 없거나 '기타'인 경우 항상 표시
+                if (!tags.length || tags.indexOf('기타') !== -1) {
+                    return true;
+                }
+
+                // 바텀 (원딜 ↔ 서폿) 연동 규칙
+                var isBotFilter = (selectedLine === '원딜' || selectedLine === '바텀' || selectedLine === '서폿' || selectedLine === '서포터');
+
+                for (var i = 0; i < tags.length; i++) {
+                    var tag = tags[i];
+                    if (isBotFilter) {
+                        if (selectedLine === '원딜' || selectedLine === '바텀') {
+                            if (tag === '원딜' || tag === '바텀' || tag === '서폿' || tag === '서포터') return true;
+                        }
+                        if (selectedLine === '서폿' || selectedLine === '서포터') {
+                            if (tag === '서폿' || tag === '서포터' || tag === '원딜' || tag === '바텀') return true;
+                        }
+                    } else {
+                        if (tag === selectedLine) return true;
+                    }
+                }
+
+                return false;
+            });
+        }
+
+        function shouldShowCardBadge(rawName, activeLine) {
+            if (!rawName) return false;
+            var parsed = getLineTagInfo(rawName);
+            if (!parsed.iconUrl) return false;
+
+            // '전체' 선택 시에는 괄호 라인 태그가 있는 모든 카운터에 아이콘 노출
+            if (!activeLine || activeLine === '전체') {
+                return true;
+            }
+
+            var tags = parsed.lineTags || [];
+            if (!tags.length || tags.indexOf('기타') !== -1) {
+                return false;
+            }
+
+            // 바텀 연동 체크 (원딜 ↔ 서폿)
+            var isBotActive = (activeLine === '원딜' || activeLine === '바텀' || activeLine === '서폿' || activeLine === '서포터');
+
+            // 카운터 라인이 현재 메인 라인(또는 바텀 그룹)에 속하는지 체크
+            var isPrimary = tags.some(function (tag) {
+                if (isBotActive) {
+                    return tag === '원딜' || tag === '바텀' || tag === '서폿' || tag === '서포터';
+                }
+                return tag === activeLine;
+            });
+
+            // 메인 라인이면 아이콘 숨김(false), 타 라인 카운터면 아이콘 노출(true)
+            return !isPrimary;
+        }
+
+        function updateFilteredCounters() {
+            if (!currentChampData) return;
+
+            var filteredHc = filterCountersByLine(currentChampData.hard_counters || [], activeLineFilter);
+            var filteredGc = filterCountersByLine(currentChampData.general_counters || [], activeLineFilter);
+
+            renderHardCounters(filteredHc);
+            renderGeneralCounters(filteredGc);
+
+            // 바텀 라인 관련(전체, 원딜, 서폿, 바텀)일 때만 추천 카운터 조합 섹션 노출
+            var isBotOrAll = (!activeLineFilter || activeLineFilter === '전체' || activeLineFilter === '원딜' || activeLineFilter === '서폿' || activeLineFilter === '바텀' || activeLineFilter === '서포터');
+            if (isBotOrAll) {
+                renderCombos(currentChampData.combo_counters || []);
+            } else {
+                var comboSec = document.getElementById('comboSection');
+                if (comboSec) comboSec.style.display = 'none';
+            }
+
+            resetInfoPanel();
+        }
+
         function renderHardCounters(counters) {
             var grid = document.getElementById('hardCounterGrid');
-            if (!counters.length) { grid.innerHTML = '<p style="color:var(--text-secondary);font-size:13px;">정보 없음</p>'; return; }
+            if (!counters.length) { grid.innerHTML = '<p style="color:var(--text-secondary);font-size:13px;">-</p>'; return; }
             grid.innerHTML = counters.map(function (c) {
-                var name = c.name || 'N/A';
+                var rawName = c.name || 'N/A';
                 var reason = c.reason || '';
-                var nameEsc = name.replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+                var parsed = getLineTagInfo(rawName);
+                var nameEsc = parsed.cleanName.replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/'/g, '&#39;');
                 var reasonEsc = reason.replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/'/g, '&#39;');
-                var imgEl = makeImgEl(name, 'hc-img', 'hc-fallback', name.substring(0, 3));
+                var imgEl = makeImgEl(parsed.cleanName, 'hc-img', 'hc-fallback', parsed.cleanName.substring(0, 3));
+                var showBadge = shouldShowCardBadge(rawName, activeLineFilter);
+                var badgeHtml = (showBadge && parsed.iconUrl) ? '<img src="' + parsed.iconUrl + '" class="line-badge" alt="' + parsed.lineTag + '" title="' + parsed.lineTag + '" />' : '';
                 return '<div class="hc-card" data-name="' + nameEsc + '" data-reason="' + reasonEsc
                     + '" onclick="onHcCardClick(this)" onmouseenter="showSyHover(this)" onmouseleave="hideSyHover()"'
                     + ' tabindex="0" role="button" aria-label="' + nameEsc + ' 카운터 설명 보기">'
-                    + imgEl + '<div class="hc-label">' + name + '</div></div>';
+                    + '<div class="card-img-wrap">' + imgEl + badgeHtml + '</div>'
+                    + '<div class="hc-label">' + parsed.cleanName + '</div></div>';
             }).join('');
         }
 
@@ -1327,12 +2321,17 @@
 
         function renderGeneralCounters(counters) {
             var grid = document.getElementById('generalCounterGrid');
-            if (!counters.length) { grid.innerHTML = '<p style="color:var(--text-secondary);font-size:13px;">정보 없음</p>'; return; }
-            grid.innerHTML = counters.map(function (name) {
-                var imgEl = makeImgEl(name, 'gc-img', 'gc-fallback', name.substring(0, 3));
+            if (!counters.length) { grid.innerHTML = '<p style="color:var(--text-secondary);font-size:13px;">해당 라인 카운터 정보 없음</p>'; return; }
+            grid.innerHTML = counters.map(function (rawName) {
+                var parsed = getLineTagInfo(rawName);
+                var imgEl = makeImgEl(parsed.cleanName, 'gc-img', 'gc-fallback', parsed.cleanName.substring(0, 3));
+                var showBadge = shouldShowCardBadge(rawName, activeLineFilter);
+                var badgeHtml = (showBadge && parsed.iconUrl) ? '<img src="' + parsed.iconUrl + '" class="line-badge" alt="' + parsed.lineTag + '" title="' + parsed.lineTag + '" />' : '';
+                var cleanEsc = parsed.cleanName.replace(/"/g, '&quot;');
                 return '<div class="gc-item" onmouseenter="showSyHover(this)" onmouseleave="hideSyHover()" data-name="'
-                    + name.replace(/"/g, '&quot;') + '">' + imgEl
-                    + '<div class="gc-name">' + name + '</div><div class="gc-tooltip">' + name + '</div></div>';
+                    + cleanEsc + '">'
+                    + '<div class="card-img-wrap">' + imgEl + badgeHtml + '</div>'
+                    + '<div class="gc-name">' + parsed.cleanName + '</div><div class="gc-tooltip">' + parsed.cleanName + '</div></div>';
             }).join('');
         }
 
@@ -1432,6 +2431,11 @@
         }
 
         function clearResults() {
+            currentChampData = null;
+            updateNavActiveState('');
+            var container = document.getElementById('lineFilterChips');
+            if (container) container.innerHTML = '';
+
             document.getElementById('results-section').classList.remove('show');
             document.getElementById('hardCounterGrid').innerHTML = '';
             document.getElementById('generalCounterGrid').innerHTML = '';
@@ -1441,8 +2445,6 @@
             document.getElementById('synergyGrid').innerHTML = '';
             resetInfoPanel();
 
-            // 결과 초기화 시 푸터 다시 표시
-            document.getElementById('initialFooter').style.display = '';
             // 결과 초기화 시 테마 토글 다시 표시
             document.getElementById('themeToggleWrap').style.display = '';
         }
@@ -1471,15 +2473,23 @@
             var acIdx = -1;  // 현재 키보드로 선택된 항목 인덱스
 
             /* 입력값에서 하이라이트 처리 */
-            function highlight(text, query) {
-                if (!query) return text;
-                var idx = text.toLowerCase().indexOf(query.toLowerCase());
-                if (idx === -1) return text;
-                return text.substring(0, idx)
-                    + '<span class="ac-highlight">'
-                    + text.substring(idx, idx + query.length)
-                    + '</span>'
-                    + text.substring(idx + query.length);
+            function highlight(text, rawQuery, convQuery) {
+                if (!text) return '';
+                var lower = text.toLowerCase();
+                var targets = [rawQuery, convQuery].filter(Boolean);
+                for (var i = 0; i < targets.length; i++) {
+                    var q = targets[i];
+                    if (!q) continue;
+                    var idx = lower.indexOf(q.toLowerCase());
+                    if (idx !== -1) {
+                        return text.substring(0, idx)
+                            + '<span class="ac-highlight">'
+                            + text.substring(idx, idx + q.length)
+                            + '</span>'
+                            + text.substring(idx + q.length);
+                    }
+                }
+                return text;
             }
 
             /* 드롭다운 닫기 */
@@ -1502,34 +2512,12 @@
             /* 자동완성 목록 렌더링 */
             function renderAC(query) {
                 if (!query) { closeList(); return; }
-                var q = query.toLowerCase();
+                var matches = searchChampions(query);
+                if (!matches.length) { closeList(); return; }
 
-                // championDict 키에서 중복 없이 매칭된 champion 데이터만 모으기
-                var seen = {};
-                var results = [];
-                Object.keys(championDict).forEach(function (key) {
-                    if (key.toLowerCase().indexOf(q) === -1) return;
-                    var data = championDict[key];
-                    var cname = data.champion;
-                    if (seen[cname]) return;
-                    seen[cname] = true;
-                    // 입력값이 별칭과 매칭됐는지 체크
-                    var matchedAlias = (key !== cname) ? key : null;
-                    results.push({ data: data, matchedKey: key, matchedAlias: matchedAlias });
-                });
-
-                // 정렬: 챔피언 이름 앞부분 일치 우선
-                results.sort(function (a, b) {
-                    var aStart = a.data.champion.toLowerCase().startsWith(q) ? 0 : 1;
-                    var bStart = b.data.champion.toLowerCase().startsWith(q) ? 0 : 1;
-                    if (aStart !== bStart) return aStart - bStart;
-                    return a.data.champion.localeCompare(b.data.champion);
-                });
-
-                // 최대 10개
-                results = results.slice(0, 10);
-
-                if (!results.length) { closeList(); return; }
+                var rawQ = query.toLowerCase();
+                var convQ = engToKor(query).toLowerCase();
+                var results = matches.slice(0, 10);
 
                 list.innerHTML = results.map(function (r, i) {
                     var cname = r.data.champion;
@@ -1539,7 +2527,7 @@
                         + '<img class="ac-thumb" src="' + urls[0] + '" alt="' + cname
                         + '" data-urls="' + urlsJson + '" data-url-idx="0" onerror="handleImgError(this)" />'
                         + '<div class="ac-thumb-fb">' + cname.substring(0, 2) + '</div>'
-                        + '<div><span class="ac-name">' + highlight(cname, query) + '</span></div>'
+                        + '<div><span class="ac-name">' + highlight(cname, rawQ, convQ) + '</span></div>'
                         + '</div>';
                 }).join('');
 
@@ -1599,29 +2587,142 @@
 
         loadData();
 
-        /* ── 이메일 복사 ── */
-        function copyEmail() {
-            var email = 'vschamplol@gmail.com';
-            navigator.clipboard.writeText(email).then(function () {
-                var toast = document.getElementById('copyToast');
-                toast.classList.add('show');
-                setTimeout(function () { toast.classList.remove('show'); }, 1500);
-            }).catch(function () {
-                // 폴백: 임시 textarea 사용
-                var ta = document.createElement('textarea');
-                ta.value = email;
-                ta.style.position = 'fixed';
-                ta.style.opacity = '0';
-                document.body.appendChild(ta);
-                ta.select();
-                document.execCommand('copy');
-                document.body.removeChild(ta);
-                var toast = document.getElementById('copyToast');
-                toast.classList.add('show');
-                setTimeout(function () { toast.classList.remove('show'); }, 1500);
-            });
+
+
+        /* ── 구글 시트 연동 상성 제보 모달 ── */
+        // ⚠️ 아래 URL을 본인의 Google Apps Script 웹 앱 URL로 변경해주세요!
+        var GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycby75Nn-TeACOLfbihrdl8Cd4Q7v4hUiy-xSo5yFJ4PZz1wgUlnNSH8eTD77n4V0L-JUCw/exec';
+
+        function openReportModal() {
+            var modal = document.getElementById('reportModal');
+            var targetInput = document.getElementById('reportTargetChamp');
+            var contentInput = document.getElementById('reportContent');
+            var statusMsg = document.getElementById('reportStatusMsg');
+
+            // 검색된 챔피언 또는 현재 입력창 챔피언 자동 세팅
+            var currentChamp = (typeof currentChampData !== 'undefined' && currentChampData && currentChampData.champion)
+                ? currentChampData.champion
+                : document.getElementById('champInput').value.trim();
+
+            targetInput.value = currentChamp;
+            contentInput.value = '';
+            statusMsg.className = 'report-status-msg';
+            statusMsg.style.display = 'none';
+
+            modal.classList.add('open');
+        }
+
+        function closeReportModal() {
+            var modal = document.getElementById('reportModal');
+            modal.classList.remove('open');
+        }
+
+        function handleModalOverlayClick(e) {
+            if (e.target.id === 'reportModal') {
+                closeReportModal();
+            }
+        }
+
+        // Esc 키 누를 시 모달 닫기
+        document.addEventListener('keydown', function (e) {
+            if (e.key === 'Escape') {
+                var modal = document.getElementById('reportModal');
+                if (modal && modal.classList.contains('open')) {
+                    closeReportModal();
+                }
+            }
+        });
+
+        async function submitReport() {
+            var targetChamp = document.getElementById('reportTargetChamp').value.trim();
+            var content = document.getElementById('reportContent').value.trim();
+            var statusMsg = document.getElementById('reportStatusMsg');
+            var submitBtn = document.getElementById('reportSubmitBtn');
+
+            if (!targetChamp) {
+                statusMsg.innerText = '대상 챔피언을 입력해주세요.';
+                statusMsg.className = 'report-status-msg error';
+                return;
+            }
+            if (!content) {
+                statusMsg.innerText = '제보 내용을 입력해주세요.';
+                statusMsg.className = 'report-status-msg error';
+                return;
+            }
+
+            if (!GOOGLE_SCRIPT_URL || GOOGLE_SCRIPT_URL.includes('YOUR_GOOGLE_APPS_SCRIPT')) {
+                statusMsg.innerText = '⚠️ 구글 앱스 스크립트 URL이 아직 설정되지 않았습니다. 안내 가이드에 따라 URL을 등록해주세요.';
+                statusMsg.className = 'report-status-msg error';
+                return;
+            }
+
+            submitBtn.disabled = true;
+            submitBtn.innerText = '전송 중...';
+
+            try {
+                var payload = {
+                    targetChamp: targetChamp,
+                    content: content
+                };
+
+                await fetch(GOOGLE_SCRIPT_URL, {
+                    method: 'POST',
+                    mode: 'no-cors',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(payload)
+                });
+
+                statusMsg.innerText = '🎉 제보가 성공적으로 제출되었습니다! 감사합니다.';
+                statusMsg.className = 'report-status-msg success';
+                document.getElementById('reportContent').value = '';
+
+                setTimeout(function () {
+                    closeReportModal();
+                }, 1800);
+            } catch (err) {
+                statusMsg.innerText = '전송 실패: ' + err.message;
+                statusMsg.className = 'report-status-msg error';
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.innerText = '제보 전송하기 🚀';
+            }
         }
     </script>
+
+    <!-- 챔피언 상성 제보 모달 팝업 -->
+    <div id="reportModal" class="report-modal-overlay" onclick="handleModalOverlayClick(event)">
+        <div class="report-modal-card">
+            <div class="report-modal-header">
+                <div class="report-modal-title">🚨 챔피언 상성 제보하기</div>
+                <button type="button" class="report-modal-close" onclick="closeReportModal()">&times;</button>
+            </div>
+            <div class="report-modal-body">
+                <!-- 1] 대상 챔피언 -->
+                <div class="report-form-group">
+                    <label class="report-form-label" for="reportTargetChamp">대상 챔피언</label>
+                    <input type="text" id="reportTargetChamp" class="report-form-input"
+                        placeholder="예: 아리, 스카너, 마오카이..." />
+                </div>
+
+                <!-- 2] 제보 내용 -->
+                <div class="report-form-group">
+                    <label class="report-form-label" for="reportContent">제보 내용</label>
+                    <textarea id="reportContent" class="report-form-textarea" rows="8"
+                        placeholder="카운터 정보, 시너지, 상대법 등 &#10;정해진 형식 없이 자유롭게 남겨주세요!"></textarea>
+                </div>
+
+                <!-- 상태 메시지 -->
+                <div id="reportStatusMsg" class="report-status-msg"></div>
+            </div>
+            <div class="report-modal-footer">
+                <button type="button" class="report-cancel-btn" onclick="closeReportModal()">취소</button>
+                <button type="button" id="reportSubmitBtn" class="report-submit-btn" onclick="submitReport()">제보 전송하기
+                    🚀</button>
+            </div>
+        </div>
+    </div>
 </body>
 
 </html>
