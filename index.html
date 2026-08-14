@@ -1349,11 +1349,7 @@
             color: var(--text-secondary);
         }
 
-        .nav-count {
-            font-size: 11px;
-            font-weight: 600;
-            color: var(--text-muted);
-        }
+
 
         .nav-line-buttons {
             display: flex;
@@ -1503,7 +1499,6 @@
             <div class="nav-header">
                 <div class="nav-title-row">
                     <span class="nav-title">⚡ 챔피언 빠른 이동</span>
-                    <span class="nav-count" id="navChampCount"></span>
                 </div>
                 <div class="nav-line-buttons" id="navLineButtons">
                     <button class="nav-line-btn active" data-line="전체" title="전체" onclick="filterNavLine('전체')">
@@ -1657,7 +1652,6 @@
 
         function renderNavSidebar() {
             var grid = document.getElementById('navChampGrid');
-            var countEl = document.getElementById('navChampCount');
             if (!grid) return;
 
             var filtered = allChampionsList.filter(function (data) {
@@ -1671,10 +1665,6 @@
                 }
                 return lines.indexOf(navLineFilter) !== -1;
             });
-
-            if (countEl) {
-                countEl.textContent = filtered.length + '명';
-            }
 
             if (!filtered.length) {
                 grid.innerHTML = '<p style="grid-column: 1 / -1; font-size: 11px; color: var(--text-muted); text-align: center; padding: 16px 0;">해당 라인 챔피언 없음</p>';
@@ -1728,7 +1718,7 @@
             showLoader(true);
             try {
                 // Cache Busting: champ.json 수정 시 ?v=1.0.3 버전을 변경하여 커밋하면 브라우저 캐시 무시됨
-                var res = await fetch('champ.json?v=1.0.3');
+                var res = await fetch('champ.json?v=1.0.4');
                 if (!res.ok) throw new Error('HTTP ' + res.status);
                 var list = await res.json();
                 allChampionsList = list.slice().sort(function (a, b) {
