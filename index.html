@@ -726,7 +726,7 @@
         [data-theme="light"] .line-badge {
             background: #1c1e24;
             border: 1.5px solid #c8aa6e;
-            box-shadow: 0 2px 8px rgba(200, 170, 110, 0.4);
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
         }
 
         /* ── 하드카운터 설명 패널 ── */
@@ -1501,11 +1501,7 @@
                     <span class="nav-title">⚡ 챔피언 빠른 이동</span>
                 </div>
                 <div class="nav-line-buttons" id="navLineButtons">
-                    <button class="nav-line-btn active" data-line="전체" title="전체" onclick="filterNavLine('전체')">
-                        <img src="https://raw.communitydragon.org/latest/plugins/rcp-fe-lol-clash/global/default/assets/images/position-selector/positions/icon-position-fill.png"
-                            alt="전체" />
-                    </button>
-                    <button class="nav-line-btn" data-line="탑" title="탑" onclick="filterNavLine('탑')">
+                    <button class="nav-line-btn active" data-line="탑" title="탑" onclick="filterNavLine('탑')">
                         <img src="https://raw.communitydragon.org/latest/plugins/rcp-fe-lol-clash/global/default/assets/images/position-selector/positions/icon-position-top.png"
                             alt="탑" />
                     </button>
@@ -1648,22 +1644,22 @@
 
         /* ── 좌측 이동용 전체 챔피언 사이드바 변수 & 함수 ── */
         var allChampionsList = [];
-        var navLineFilter = '전체';
+        var navLineFilter = '탑';
 
         function renderNavSidebar() {
             var grid = document.getElementById('navChampGrid');
             if (!grid) return;
 
             var filtered = allChampionsList.filter(function (data) {
-                if (!navLineFilter || navLineFilter === '전체') return true;
+                var targetLine = navLineFilter || '탑';
                 var lines = data.lines || [];
-                if (navLineFilter === '원딜') {
+                if (targetLine === '원딜') {
                     return lines.indexOf('원딜') !== -1 || lines.indexOf('바텀') !== -1;
                 }
-                if (navLineFilter === '서폿') {
+                if (targetLine === '서폿') {
                     return lines.indexOf('서폿') !== -1 || lines.indexOf('서포터') !== -1;
                 }
-                return lines.indexOf(navLineFilter) !== -1;
+                return lines.indexOf(targetLine) !== -1;
             });
 
             if (!filtered.length) {
@@ -1701,7 +1697,7 @@
 
         function onNavChampClick(champName) {
             document.getElementById('champInput').value = champName;
-            search();
+            search(navLineFilter);
         }
 
         function updateNavActiveState(champName) {
@@ -1717,8 +1713,8 @@
         async function loadData() {
             showLoader(true);
             try {
-                // Cache Busting: champ.json 수정 시 ?v=1.0.3 버전을 변경하여 커밋하면 브라우저 캐시 무시됨
-                var res = await fetch('champ.json?v=1.0.4');
+                // Cache Busting: champ.json 수정 시 ?v=1.0.5 버전을 변경하여 커밋하면 브라우저 캐시 무시됨
+                var res = await fetch('champ.json?v=1.0.5');
                 if (!res.ok) throw new Error('HTTP ' + res.status);
                 var list = await res.json();
                 allChampionsList = list.slice().sort(function (a, b) {
@@ -2022,7 +2018,7 @@
         }
 
         /* ── 검색 ── */
-        function search() {
+        function search(preferredLine) {
             var query = document.getElementById('champInput').value.trim();
             clearAlerts();
             clearResults();
@@ -2045,7 +2041,7 @@
             }
 
             if (!data) { showAlert('error', "'" + query + "'에 대한 데이터를 찾을 수 없습니다. 챔피언 이름(별칭 포함)을 다시 확인해주세요."); return; }
-            renderResults(data);
+            renderResults(data, preferredLine);
         }
 
         /* ── 라인 필터 칩 상태 ── */
@@ -2053,7 +2049,7 @@
         var activeLineFilter = '전체';
 
         /* ── 결과 렌더링 ── */
-        function renderResults(data) {
+        function renderResults(data, preferredLine) {
             currentChampData = data;
             var champName = data.champion || '';
             var thumbImg = document.getElementById('champThumbImg');
@@ -2066,7 +2062,7 @@
             thumbImg.onerror = function () { handleImgError(this); };
             thumbImg.src = urls[0];
 
-            renderLineFilters(data);
+            renderLineFilters(data, preferredLine);
             updateFilteredCounters();
 
             renderSynergy(data.synergy || [], champName);
@@ -2116,7 +2112,7 @@
         }
 
         /* ── 라인 필터 칩 렌더링 & 이벤트 ── */
-        function renderLineFilters(data) {
+        function renderLineFilters(data, preferredLine) {
             var container = document.getElementById('lineFilterChips');
             if (!container) return;
 
@@ -2124,6 +2120,19 @@
             if (!lines.length) {
                 container.innerHTML = '';
                 return;
+            }
+
+            var defaultLine = lines[0];
+            if (preferredLine) {
+                var found = lines.find(function (l) {
+                    if (l === preferredLine) return true;
+                    if ((preferredLine === '원딜' || preferredLine === '바텀') && (l === '원딜' || l === '바텀')) return true;
+                    if ((preferredLine === '서폿' || preferredLine === '서포터') && (l === '서폿' || l === '서포터')) return true;
+                    return false;
+                });
+                if (found) {
+                    defaultLine = found;
+                }
             }
 
             var html = '';
@@ -2135,15 +2144,16 @@
                     + '<img src="' + iconUrl + '" alt="' + line + '" />'
                     + '</button>';
             } else {
-                activeLineFilter = '전체';
-                // 1) 전체 칩 (기본 선택)
-                html += '<button class="line-chip-btn active" data-line="전체" title="전체" onclick="onLineChipClick(this)">'
+                activeLineFilter = defaultLine;
+                // 1) 전체 칩
+                html += '<button class="line-chip-btn' + (activeLineFilter === '전체' ? ' active' : '') + '" data-line="전체" title="전체" onclick="onLineChipClick(this)">'
                     + '<img src="' + POSITION_ICONS.all + '" alt="전체" />'
                     + '</button>';
-                // 2) 각 라인 칩
+                // 2) 각 라인 칩 (선택된/첫 번째 라인이 기본 선택됨)
                 lines.forEach(function (line) {
                     var iconUrl = LINE_ICON_MAP[line] || POSITION_ICONS.all;
-                    html += '<button class="line-chip-btn" data-line="' + line + '" title="' + line + '" onclick="onLineChipClick(this)">'
+                    var isActive = (line === activeLineFilter);
+                    html += '<button class="line-chip-btn' + (isActive ? ' active' : '') + '" data-line="' + line + '" title="' + line + '" onclick="onLineChipClick(this)">'
                         + '<img src="' + iconUrl + '" alt="' + line + '" />'
                         + '</button>';
                 });
