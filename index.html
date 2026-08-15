@@ -18,6 +18,10 @@
         gtag('config', 'G-66DBCD4D0R');
     </script>
 
+    <!-- Google AdSense -->
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6088994578141254"
+        crossorigin="anonymous"></script>
+
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>롤 챔피언 상성 정리</title>
     <link rel="icon" type="image/png" href="champ_img/icon.png" />
@@ -1406,12 +1410,17 @@
         .nav-champ-list-wrap {
             flex: 1;
             overflow-y: auto;
+            overflow-x: hidden;
             display: grid;
             grid-template-columns: repeat(6, 1fr);
             gap: 5px;
-            padding-right: 2px;
-            scrollbar-width: thin;
-            scrollbar-color: rgba(255, 74, 74, 0.3) transparent;
+            padding: 4px;
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+        }
+
+        .nav-champ-list-wrap::-webkit-scrollbar {
+            display: none;
         }
 
         .nav-champ-item {
@@ -1713,8 +1722,8 @@
         async function loadData() {
             showLoader(true);
             try {
-                // Cache Busting: champ.json 수정 시 ?v=1.0.5 버전을 변경하여 커밋하면 브라우저 캐시 무시됨
-                var res = await fetch('champ.json?v=1.0.5');
+                // Cache Busting: champ.json 수정 시 ?v=1.0.6 버전을 변경하여 커밋하면 브라우저 캐시 무시됨
+                var res = await fetch('champ.json?v=1.0.6');
                 if (!res.ok) throw new Error('HTTP ' + res.status);
                 var list = await res.json();
                 allChampionsList = list.slice().sort(function (a, b) {
