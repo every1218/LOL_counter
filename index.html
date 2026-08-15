@@ -680,17 +680,28 @@
             text-align: center;
         }
 
-        .hc-card:hover .hc-img,
-        .hc-card.active .hc-img {
+        .hc-card:hover .hc-img {
             transform: scale(1.1);
             border-color: var(--accent-red);
             box-shadow: 0 0 18px rgba(255, 74, 74, 0.5);
         }
 
-        .hc-card:hover .hc-fallback,
-        .hc-card.active .hc-fallback {
+        .hc-card.active .hc-img {
+            transform: scale(1.1);
+            border-width: 2.5px;
+            border-color: var(--accent-red);
+            box-shadow: 0 0 18px rgba(255, 74, 74, 0.6);
+        }
+
+        .hc-card:hover .hc-fallback {
             border-color: var(--accent-red);
             box-shadow: 0 0 18px rgba(255, 74, 74, 0.5);
+        }
+
+        .hc-card.active .hc-fallback {
+            border-width: 2.5px;
+            border-color: var(--accent-red);
+            box-shadow: 0 0 18px rgba(255, 74, 74, 0.6);
         }
 
         .hc-label {
@@ -816,6 +827,48 @@
             border-color: rgba(128, 128, 128, 0.25);
             transform: translateY(-2px);
             box-shadow: 0 6px 15px rgba(0, 0, 0, 0.15);
+        }
+
+        .gc-item.has-reason {
+            cursor: pointer;
+        }
+
+        .gc-item.has-reason.active .gc-img,
+        .gc-item.has-reason.active .gc-fallback {
+            border-width: 2.0px;
+            border-color: var(--accent-red);
+            box-shadow: 0 0 12px rgba(255, 74, 74, 0.55);
+        }
+
+        .reason-badge {
+            position: absolute;
+            top: -2px;
+            left: -2px;
+            width: 14px;
+            height: 14px;
+            background: rgba(18, 18, 28, 0.82);
+            border: 1px solid rgba(255, 255, 255, 0.18);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 7.5px;
+            z-index: 3;
+            pointer-events: none;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.25);
+            opacity: 0.85;
+            transition: opacity 0.2s ease, transform 0.2s ease;
+        }
+
+        .gc-item.has-reason:hover .reason-badge {
+            opacity: 1;
+            transform: scale(1.1);
+        }
+
+        [data-theme="light"] .reason-badge {
+            background: rgba(255, 255, 255, 0.9);
+            border: 1px solid rgba(0, 0, 0, 0.15);
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12);
         }
 
         .gc-img {
@@ -1617,7 +1670,7 @@
                 <div class="cc-grid" id="comboGrid"></div>
             </div>
             <hr class="section-divider" />
-            <div class="hc-hint" id="hcHint">💡 위의 하드 카운터를 클릭하면 설명이 표시됩니다.</div>
+            <div class="hc-hint" id="hcHint">💡 하드 카운터 항목을 클릭하면 상세 설명이 표시됩니다.</div>
             <div class="hc-info-panel" id="hcInfoPanel">
                 <div class="hc-info-name" id="hcInfoName"></div>
                 <div class="hc-info-reason" id="hcInfoReason"></div>
@@ -1722,8 +1775,8 @@
         async function loadData() {
             showLoader(true);
             try {
-                // Cache Busting: champ.json 수정 시 ?v=1.0.6 버전을 변경하여 커밋하면 브라우저 캐시 무시됨
-                var res = await fetch('champ.json?v=1.0.6');
+                // Cache Busting: champ.json 수정 시 ?v=1.0.7 버전을 변경하여 커밋하면 브라우저 캐시 무시됨
+                var res = await fetch('champ.json?v=1.0.7');
                 if (!res.ok) throw new Error('HTTP ' + res.status);
                 var list = await res.json();
                 allChampionsList = list.slice().sort(function (a, b) {
@@ -2107,6 +2160,9 @@
 
         function getLineTagInfo(rawName) {
             if (!rawName) return { rawName: '', cleanName: '', lineTag: '', lineTags: [], iconUrl: '' };
+            if (typeof rawName === 'object' && rawName !== null) {
+                rawName = rawName.name || '';
+            }
             var cleanName = stripParenSuffix(rawName);
             var match = rawName.match(/\((.*?)\)/);
             if (match) {
@@ -2228,6 +2284,9 @@
 
         function shouldShowCardBadge(rawName, activeLine) {
             if (!rawName) return false;
+            if (typeof rawName === 'object' && rawName !== null) {
+                rawName = rawName.name || '';
+            }
             var parsed = getLineTagInfo(rawName);
             if (!parsed.iconUrl) return false;
 
@@ -2281,8 +2340,8 @@
             var grid = document.getElementById('hardCounterGrid');
             if (!counters.length) { grid.innerHTML = '<p style="color:var(--text-secondary);font-size:13px;">-</p>'; return; }
             grid.innerHTML = counters.map(function (c) {
-                var rawName = c.name || 'N/A';
-                var reason = c.reason || '';
+                var rawName = (typeof c === 'string') ? c : (c && c.name ? c.name : 'N/A');
+                var reason = (typeof c === 'object' && c !== null && c.reason) ? c.reason : '';
                 var parsed = getLineTagInfo(rawName);
                 var nameEsc = parsed.cleanName.replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/'/g, '&#39;');
                 var reasonEsc = reason.replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/'/g, '&#39;');
@@ -2331,15 +2390,26 @@
         function renderGeneralCounters(counters) {
             var grid = document.getElementById('generalCounterGrid');
             if (!counters.length) { grid.innerHTML = '<p style="color:var(--text-secondary);font-size:13px;">해당 라인 카운터 정보 없음</p>'; return; }
-            grid.innerHTML = counters.map(function (rawName) {
+            grid.innerHTML = counters.map(function (c) {
+                var rawName = (typeof c === 'string') ? c : (c && c.name ? c.name : 'N/A');
+                var reason = (typeof c === 'object' && c !== null && c.reason) ? c.reason : '';
                 var parsed = getLineTagInfo(rawName);
                 var imgEl = makeImgEl(parsed.cleanName, 'gc-img', 'gc-fallback', parsed.cleanName.substring(0, 3));
                 var showBadge = shouldShowCardBadge(rawName, activeLineFilter);
                 var badgeHtml = (showBadge && parsed.iconUrl) ? '<img src="' + parsed.iconUrl + '" class="line-badge" alt="' + parsed.lineTag + '" title="' + parsed.lineTag + '" />' : '';
-                var cleanEsc = parsed.cleanName.replace(/"/g, '&quot;');
-                return '<div class="gc-item" onmouseenter="showSyHover(this)" onmouseleave="hideSyHover()" data-name="'
-                    + cleanEsc + '">'
-                    + '<div class="card-img-wrap">' + imgEl + badgeHtml + '</div>'
+                var cleanEsc = parsed.cleanName.replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+                var reasonEsc = reason.replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+
+                var hasReason = Boolean(reason);
+                var reasonBadge = hasReason ? '<div class="reason-badge" title="상세 설명 보기">📝</div>' : '';
+                var clickAttrs = hasReason
+                    ? ' data-name="' + cleanEsc + '" data-reason="' + reasonEsc + '" onclick="onHcCardClick(this)" tabindex="0" role="button" aria-label="' + cleanEsc + ' 카운터 설명 보기"'
+                    : ' data-name="' + cleanEsc + '"';
+                var extraClass = hasReason ? ' has-reason' : '';
+
+                return '<div class="gc-item' + extraClass + '" onmouseenter="showSyHover(this)" onmouseleave="hideSyHover()"'
+                    + clickAttrs + '>'
+                    + '<div class="card-img-wrap">' + imgEl + badgeHtml + reasonBadge + '</div>'
                     + '<div class="gc-name">' + parsed.cleanName + '</div><div class="gc-tooltip">' + parsed.cleanName + '</div></div>';
             }).join('');
         }
