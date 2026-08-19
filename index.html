@@ -27,7 +27,7 @@
     <link rel="icon" type="image/png" href="champ_img/icon.png" />
 
     <meta name="description" content="리그 오브 레전드 챔피언 카운터 정보를 빠르게 조회하세요. 하드 카운터, 일반 카운터, 추천 조합을 한눈에 확인할 수 있습니다." />
-    <meta name="keywords" content="롤, 리그오브레전드, 카운터, 챔피언, LOL, counter" />
+    <meta name="keywords" content="롤, 리그오브레전드, 카운터, 챔피언, LOL counter, 英雄联盟 counter" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
@@ -1775,8 +1775,8 @@
         async function loadData() {
             showLoader(true);
             try {
-                // Cache Busting: champ.json 수정 시 ?v=1.0.8 버전을 변경하여 커밋하면 브라우저 캐시 무시됨
-                var res = await fetch('champ.json?v=1.0.8');
+                // Cache Busting: champ.json 수정 시 ?v=1.0.9 버전을 변경하여 커밋하면 브라우저 캐시 무시됨
+                var res = await fetch('champ.json?v=1.0.9');
                 if (!res.ok) throw new Error('HTTP ' + res.status);
                 var list = await res.json();
                 allChampionsList = list.slice().sort(function (a, b) {
