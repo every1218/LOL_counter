@@ -23,16 +23,46 @@
         crossorigin="anonymous"></script>
 
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>롤 챔피언 상성 정리</title>
+    <title>롤 챔피언 상성 정리 | LOL Counter</title>
     <link rel="icon" type="image/png" href="champ_img/icon.png" />
 
-    <meta name="description" content="리그 오브 레전드 챔피언 카운터 정보를 빠르게 조회하세요. 하드 카운터, 일반 카운터, 추천 조합을 한눈에 확인할 수 있습니다." />
-    <meta name="keywords" content="롤, 리그오브레전드, 카운터, 챔피언, LOL counter, 英雄联盟 counter" />
+    <!-- SEO Meta Tags -->
+    <meta name="description"
+        content="롤 챔피언 카운터 상성 정리. 가렌, 나르, 야스오, 아리 등 173개 전 챔피언 하드 카운터, 일반 카운터, 추천 조합 검색. LoL Champion Counter Guide (Garen Counter, Lux Counter). 英雄联盟英雄克制指南." />
+    <meta name="keywords"
+        content="롤, 리그오브레전드, 카운터, 챔피언, 가렌 카운터, 나르 카운터, 야스오 카운터, 아리 카운터, 리신 카운터, 롤 챔피언 카운터, 상성 정리, LOL counter, Garen Counter, Lux Counter, Yasuo Counter, LoL Counter Pick, 盖伦克制, 亚索克制, 英雄联盟克制" />
+
+    <!-- Open Graph / Social Media -->
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="롤 챔피언 카운터 상성 정리 | LOL Counter" />
+    <meta property="og:description"
+        content="가렌, 나르, 야스오 등 롤 173개 챔피언 하드 카운터 & 픽률 상성 정리. Garen Counter, Lux Counter, 英雄联盟克制." />
+    <meta property="og:image"
+        content="https://raw.communitydragon.org/latest/plugins/rcp-fe-lol-clash/global/default/assets/images/position-selector/positions/icon-position-fill.png" />
+    <meta property="og:site_name" content="LOL Counter" />
+
+    <!-- Structured Data (Schema.org JSON-LD) -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebSite",
+      "name": "LOL Counter",
+      "alternateName": ["롤 챔피언 카운터", "LoL Champion Counter", "英雄联盟英雄克制指南"],
+      "url": "https://lolcounter.app",
+      "potentialAction": {
+        "@type": "SearchAction",
+        "target": "https://lolcounter.app/?champ={search_term_string}",
+        "query-input": "required name=search_term_string"
+      }
+    }
+    </script>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
         href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=Noto+Sans+KR:wght@300;400;700&display=swap"
         rel="stylesheet" />
+    <script src="champ_en_map.js"></script>
+    <script src="champ_zh_map.js"></script>
     <style>
         *,
         *::before,
@@ -108,45 +138,155 @@
 
 
 
-        .theme-toggle {
-            display: flex;
-            align-items: center;
-            gap: 0;
-            background: var(--bg-panel);
-            border: 1px solid var(--border-subtle);
-            border-radius: 50px;
-            padding: 4px;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
-        }
-
-        .theme-btn {
+        /* ── 단일 테마 토글 버튼 ── */
+        .theme-toggle-btn {
             display: flex;
             align-items: center;
             gap: 6px;
-            padding: 6px 14px;
-            border: none;
+            padding: 7px 14px;
+            background: var(--bg-panel);
+            border: 1px solid var(--border-subtle);
             border-radius: 50px;
             font-family: inherit;
             font-size: 13px;
             font-weight: 600;
+            color: var(--text-primary);
             cursor: pointer;
             transition: all 0.2s ease;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+        }
+
+        .theme-toggle-btn:hover {
+            border-color: var(--accent-red);
+            background: var(--bg-card);
+        }
+
+        /* ── 언어 드롭다운 (팝오버) ── */
+        .lang-dropdown-wrap {
+            position: relative;
+            display: inline-block;
+        }
+
+        .lang-dropdown-btn {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            padding: 7px 14px;
+            background: var(--bg-panel);
+            border: 1px solid var(--border-subtle);
+            border-radius: 50px;
+            font-family: inherit;
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text-primary);
+            cursor: pointer;
+            transition: all 0.2s ease;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+        }
+
+        .lang-dropdown-btn:hover {
+            border-color: var(--accent-red);
+            background: var(--bg-card);
+        }
+
+        .lang-globe-icon {
+            font-size: 14px;
+            line-height: 1;
+        }
+
+        .lang-chevron {
+            font-size: 10px;
             color: var(--text-muted);
+            transition: transform 0.2s ease;
+            margin-left: 2px;
+        }
+
+        .lang-dropdown-wrap.open .lang-chevron {
+            transform: rotate(180deg);
+        }
+
+        .lang-dropdown-menu {
+            display: none;
+            position: absolute;
+            top: calc(100% + 8px);
+            right: 0;
+            min-width: 140px;
+            background: var(--bg-card);
+            border: 1px solid var(--border-subtle);
+            border-radius: 14px;
+            padding: 6px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
+            z-index: 10000;
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            animation: dropdownFadeIn 0.18s ease forwards;
+        }
+
+        @keyframes dropdownFadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(-6px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .lang-dropdown-menu.open {
+            display: block;
+        }
+
+        .lang-menu-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            width: 100%;
+            padding: 9px 12px;
+            border: none;
+            border-radius: 8px;
             background: transparent;
+            color: var(--text-primary);
+            font-family: inherit;
+            font-size: 13px;
+            font-weight: 600;
+            text-align: left;
+            cursor: pointer;
+            transition: background 0.15s ease, color 0.15s ease;
         }
 
-        .theme-btn.active {
-            background: var(--accent-red);
-            color: #fff;
-            box-shadow: 0 2px 8px rgba(255, 74, 74, 0.35);
+        .lang-menu-item:hover {
+            background: rgba(128, 128, 128, 0.12);
         }
 
-        [data-theme="light"] .theme-btn.active {
-            box-shadow: 0 2px 8px rgba(229, 62, 62, 0.3);
+        .lang-menu-item.active {
+            color: var(--accent-red);
+            font-weight: 700;
+            background: rgba(255, 74, 74, 0.08);
         }
 
-        /* top-row 안에서 theme-toggle 세로 가운데 정렬 + 오른쪽 끝으로 밀기 */
-        .top-row .theme-toggle {
+        [data-theme="light"] .lang-menu-item.active {
+            background: rgba(229, 62, 62, 0.08);
+        }
+
+        .lang-check {
+            font-size: 13px;
+            font-weight: 800;
+            color: var(--accent-red);
+            opacity: 0;
+            transition: opacity 0.15s ease;
+        }
+
+        .lang-menu-item.active .lang-check {
+            opacity: 1;
+        }
+
+        /* top-row 안에서 header-toggles 세로 가운데 정렬 + 오른쪽 끝으로 밀기 */
+        .top-row .header-toggles {
+            display: flex;
+            align-items: center;
+            gap: 8px;
             align-self: center;
             flex-shrink: 0;
             margin-left: auto;
@@ -908,29 +1048,7 @@
         }
 
         .gc-tooltip {
-            visibility: hidden;
-            opacity: 0;
-            position: absolute;
-            bottom: calc(100% + 6px);
-            left: 50%;
-            transform: translateX(-50%);
-            background: var(--tooltip-bg);
-            color: #e2e8f0;
-            font-size: 11px;
-            font-weight: 600;
-            white-space: nowrap;
-            padding: 4px 9px;
-            border-radius: 6px;
-            pointer-events: none;
-            z-index: 9999;
-            transition: opacity 0.18s ease;
-            border: 1px solid rgba(255, 255, 255, 0.12);
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-        }
-
-        .gc-item:hover .gc-tooltip {
-            visibility: visible;
-            opacity: 1;
+            display: none !important;
         }
 
         /* ── 추천 조합 ── */
@@ -1643,11 +1761,34 @@
                 <div class="sy-grid" id="synergyGrid"></div>
             </div>
 
-            <!-- 주제 토글 (초기 화면에서만 표시) -->
-            <div class="theme-toggle" id="themeToggleWrap" role="group" aria-label="테마 선택">
-                <button id="btnDark" class="theme-btn" onclick="setTheme('dark')" aria-pressed="false">🌙 다크</button>
-                <button id="btnLight" class="theme-btn active" onclick="setTheme('light')" aria-pressed="true">☀️
-                    라이트</button>
+            <!-- 언어 및 테마 토글 (초기 화면에서만 표시) -->
+            <div class="header-toggles" id="headerTogglesWrap">
+                <div class="lang-dropdown-wrap" id="langDropdownWrap">
+                    <button id="langDropdownBtn" class="lang-dropdown-btn" onclick="toggleLangDropdown(event)"
+                        aria-haspopup="true" aria-expanded="false">
+                        <span class="lang-globe-icon">🌐</span>
+                        <span id="langDropdownLabel">한국어</span>
+                        <span class="lang-chevron">▾</span>
+                    </button>
+                    <div class="lang-dropdown-menu" id="langDropdownMenu" role="menu">
+                        <button class="lang-menu-item active" id="itemKo" onclick="selectLang('ko')" role="menuitem">
+                            <span>한국어</span>
+                            <span class="lang-check">✓</span>
+                        </button>
+                        <button class="lang-menu-item" id="itemEn" onclick="selectLang('en')" role="menuitem">
+                            <span>English</span>
+                            <span class="lang-check">✓</span>
+                        </button>
+                        <button class="lang-menu-item" id="itemZh" onclick="selectLang('zh')" role="menuitem">
+                            <span>中文</span>
+                            <span class="lang-check">✓</span>
+                        </button>
+                    </div>
+                </div>
+                <button id="themeToggleBtn" class="theme-toggle-btn" onclick="toggleTheme()" aria-label="테마 전환">
+                    <span id="themeToggleIcon">🌙</span>
+                    <span id="themeToggleText">Dark</span>
+                </button>
             </div>
         </div>
 
@@ -1689,15 +1830,215 @@
     <script>
         var championDict = {};
         var activeHcCard = null;
+        var currentLang = 'ko';
 
-        /* ── 테마 ── */
+        function getChampDisplayName(koName) {
+            if (!koName) return '';
+            var cleanKey = stripParenSuffix(koName);
+            if (currentLang === 'en' && typeof CHAMP_EN_MAP !== 'undefined') {
+                return CHAMP_EN_MAP[cleanKey] || CHAMP_EN_MAP[koName] || cleanKey;
+            }
+            if (currentLang === 'zh' && typeof CHAMP_ZH_MAP !== 'undefined') {
+                return CHAMP_ZH_MAP[cleanKey] || CHAMP_ZH_MAP[koName] || cleanKey;
+            }
+            return cleanKey;
+        }
+
+        function getLineDisplayName(line) {
+            if (!line) return '';
+            if (currentLang === 'en' && typeof LINE_EN_MAP !== 'undefined') {
+                return LINE_EN_MAP[line] || line;
+            }
+            if (currentLang === 'zh' && typeof LINE_ZH_MAP !== 'undefined') {
+                return LINE_ZH_MAP[line] || line;
+            }
+            return line;
+        }
+
+        function setLang(lang) {
+            if (lang !== 'ko' && lang !== 'en' && lang !== 'zh') return;
+            currentLang = lang;
+            localStorage.setItem('lol-lang', currentLang);
+            applyLang();
+            if (currentChampData) {
+                renderResults(currentChampData, activeLineFilter);
+            }
+        }
+
+        /* ── 언어 드롭다운 (팝오버) 스크립트 ── */
+        function toggleLangDropdown(e) {
+            if (e) e.stopPropagation();
+            var wrap = document.getElementById('langDropdownWrap');
+            var menu = document.getElementById('langDropdownMenu');
+            var btn = document.getElementById('langDropdownBtn');
+            if (!menu) return;
+            var isOpen = menu.classList.contains('open');
+            if (isOpen) {
+                closeLangDropdown();
+            } else {
+                menu.classList.add('open');
+                if (wrap) wrap.classList.add('open');
+                if (btn) btn.setAttribute('aria-expanded', 'true');
+            }
+        }
+
+        function closeLangDropdown() {
+            var wrap = document.getElementById('langDropdownWrap');
+            var menu = document.getElementById('langDropdownMenu');
+            var btn = document.getElementById('langDropdownBtn');
+            if (menu) menu.classList.remove('open');
+            if (wrap) wrap.classList.remove('open');
+            if (btn) btn.setAttribute('aria-expanded', 'false');
+        }
+
+        document.addEventListener('click', function (e) {
+            var wrap = document.getElementById('langDropdownWrap');
+            if (wrap && !wrap.contains(e.target)) {
+                closeLangDropdown();
+            }
+        });
+
+        function selectLang(lang) {
+            closeLangDropdown();
+            setLang(lang);
+        }
+
+        function applyLang() {
+            var isEn = (currentLang === 'en');
+            var isZh = (currentLang === 'zh');
+            var isNonKo = (currentLang !== 'ko');
+            document.documentElement.setAttribute('lang', currentLang);
+
+            var dropdownLabel = document.getElementById('langDropdownLabel');
+            if (dropdownLabel) {
+                dropdownLabel.textContent = isZh ? '中文' : (isEn ? 'English' : '한국어');
+            }
+
+            var itemKo = document.getElementById('itemKo');
+            var itemEn = document.getElementById('itemEn');
+            var itemZh = document.getElementById('itemZh');
+            if (itemKo) itemKo.classList.toggle('active', currentLang === 'ko');
+            if (itemEn) itemEn.classList.toggle('active', isEn);
+            if (itemZh) itemZh.classList.toggle('active', isZh);
+
+            updateThemeBtnUI();
+
+            document.title = isZh ? '英雄联盟英雄克制指南 - LOL Counter' : (isEn ? 'LoL Champion Counter Guide' : '롤 챔피언 상성 정리');
+
+            var searchLabel = document.querySelector('.search-label');
+            if (searchLabel) {
+                searchLabel.textContent = isZh ? '输入要查询克制关系的英雄' : (isEn ? 'Enter a champion to find counter information' : '카운터 정보를 알고 싶은 챔피언을 입력하세요');
+            }
+            var champInput = document.getElementById('champInput');
+            if (champInput) {
+                champInput.placeholder = isZh ? '例如: 盖伦, 拉克丝, 阿狸 ...' : (isEn ? 'e.g. Garen, Lux, Ahri ...' : '예: 가렌, 갱플, 아리 ...');
+            }
+            var searchBtn = document.getElementById('searchBtn');
+            if (searchBtn) {
+                searchBtn.textContent = isZh ? '查询' : (isEn ? 'Search' : '조회하기');
+            }
+
+            var navTitle = document.querySelector('.nav-title');
+            if (navTitle) {
+                navTitle.textContent = isZh ? '⚡ 快速跳转' : (isEn ? '⚡ Quick Jump' : '⚡ 챔피언 빠른 이동');
+            }
+
+            var reportTooltip = document.querySelector('.report-btn-tooltip');
+            if (reportTooltip) {
+                reportTooltip.textContent = isZh ? '反馈克制信息' : (isEn ? 'Report Counter' : '상성 제보하기');
+            }
+            var sirenBtn = document.querySelector('.report-siren-btn');
+            if (sirenBtn) {
+                sirenBtn.setAttribute('aria-label', isZh ? '反馈克制信息' : (isEn ? 'Report Counter' : '상성 제보하기'));
+            }
+            var reportBtnWrap = document.querySelector('.report-btn-wrap');
+            if (reportBtnWrap) {
+                reportBtnWrap.style.display = isNonKo ? 'none' : '';
+            }
+
+            var loaderText = document.querySelector('.loader div:nth-child(2)');
+            if (loaderText) {
+                loaderText.textContent = isZh ? '数据加载中...' : (isEn ? 'Loading data...' : '데이터 로딩 중...');
+            }
+
+            var secHeaders = document.querySelectorAll('#results-section .section-header');
+            if (secHeaders.length >= 2) {
+                secHeaders[0].textContent = isZh ? '💀 强力克制' : (isEn ? '💀 Hard Counters' : '💀 하드 카운터');
+                secHeaders[1].textContent = isZh ? '🔥 一般克制' : (isEn ? '🔥 Counters' : '🔥 일반 카운터');
+            }
+            var comboHeader = document.querySelector('#comboSection .section-header');
+            if (comboHeader) {
+                comboHeader.textContent = isZh ? '🔗 推荐克制组合' : (isEn ? '🔗 Recommended Counter Combos' : '🔗 추천 카운터 조합');
+            }
+
+            var hcHint = document.getElementById('hcHint');
+            if (hcHint) {
+                hcHint.textContent = isNonKo ? '' : '💡 하드 카운터 항목을 클릭하면 상세 설명이 표시됩니다.';
+                if (isNonKo) hcHint.style.display = 'none';
+                else if (!activeHcCard) hcHint.style.display = 'block';
+            }
+
+            // 미지원 1: 우측 롤 내전 팀 자동배전 배너 숨김
+            var sideBannerWrap = document.querySelector('.side-banner-wrap');
+            if (sideBannerWrap) {
+                sideBannerWrap.style.display = isNonKo ? 'none' : '';
+            }
+
+            renderNavSidebar();
+        }
+
+        function initLang() {
+            var params = new URLSearchParams(window.location.search);
+            var urlLang = params.get('lang');
+            if (urlLang) {
+                urlLang = urlLang.toLowerCase();
+                if (urlLang === 'en' || urlLang === 'ko' || urlLang === 'zh') {
+                    currentLang = urlLang;
+                    localStorage.setItem('lol-lang', currentLang);
+                    applyLang();
+                    return;
+                }
+            }
+            var saved = localStorage.getItem('lol-lang');
+            if (saved === 'en' || saved === 'ko' || saved === 'zh') {
+                currentLang = saved;
+            } else {
+                var userNavLang = (navigator.language || navigator.userLanguage || '').toLowerCase();
+                if (userNavLang.startsWith('zh')) currentLang = 'zh';
+                else if (userNavLang.startsWith('ko')) currentLang = 'ko';
+                else currentLang = 'en';
+            }
+            applyLang();
+        }
+
+        /* ── 단일 테마 토글 버튼 스크립트 ── */
+        function toggleTheme() {
+            var current = document.documentElement.getAttribute('data-theme') || 'light';
+            var next = (current === 'dark') ? 'light' : 'dark';
+            setTheme(next);
+        }
+
         function setTheme(theme) {
             document.documentElement.setAttribute('data-theme', theme);
             localStorage.setItem('lol-theme', theme);
-            document.getElementById('btnDark').classList.toggle('active', theme === 'dark');
-            document.getElementById('btnLight').classList.toggle('active', theme === 'light');
-            document.getElementById('btnDark').setAttribute('aria-pressed', theme === 'dark');
-            document.getElementById('btnLight').setAttribute('aria-pressed', theme === 'light');
+            updateThemeBtnUI();
+        }
+
+        function updateThemeBtnUI() {
+            var theme = document.documentElement.getAttribute('data-theme') || 'light';
+            var iconEl = document.getElementById('themeToggleIcon');
+            var textEl = document.getElementById('themeToggleText');
+            var isEn = (currentLang === 'en');
+            var isZh = (currentLang === 'zh');
+            if (iconEl && textEl) {
+                if (theme === 'dark') {
+                    iconEl.textContent = '🌙';
+                    textEl.textContent = isZh ? '深色' : (isEn ? 'Dark' : '다크');
+                } else {
+                    iconEl.textContent = '☀️';
+                    textEl.textContent = isZh ? '浅色' : (isEn ? 'Light' : '라이트');
+                }
+            }
         }
         (function () {
             var saved = localStorage.getItem('lol-theme') || 'light';
@@ -1724,8 +2065,28 @@
                 return lines.indexOf(targetLine) !== -1;
             });
 
+            if (currentLang === 'en') {
+                filtered.sort(function (a, b) {
+                    var nameA = getChampDisplayName(a.champion);
+                    var nameB = getChampDisplayName(b.champion);
+                    return nameA.localeCompare(nameB, 'en');
+                });
+            } else if (currentLang === 'zh') {
+                filtered.sort(function (a, b) {
+                    var nameA = getChampDisplayName(a.champion);
+                    var nameB = getChampDisplayName(b.champion);
+                    return nameA.localeCompare(nameB, 'zh-Hans-CN');
+                });
+            } else {
+                filtered.sort(function (a, b) {
+                    return a.champion.localeCompare(b.champion, 'ko');
+                });
+            }
+
             if (!filtered.length) {
-                grid.innerHTML = '<p style="grid-column: 1 / -1; font-size: 11px; color: var(--text-muted); text-align: center; padding: 16px 0;">해당 라인 챔피언 없음</p>';
+                var emptyMsg = (currentLang === 'zh') ? '该分路暂无英雄' : (currentLang === 'en' ? 'No champions in this line' : '해당 라인 챔피언 없음');
+                grid.innerHTML = '<p style="grid-column: 1 / -1; font-size: 11px; color: var(--text-muted); text-align: center; padding: 16px 0;">'
+                    + emptyMsg + '</p>';
                 return;
             }
 
@@ -1733,17 +2094,19 @@
 
             grid.innerHTML = filtered.map(function (data) {
                 var cname = data.champion;
+                var dispName = getChampDisplayName(cname);
                 var urls = buildUrls(cname);
                 var urlsJson = JSON.stringify(urls).replace(/"/g, '&quot;');
                 var nameEsc = cname.replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+                var dispEsc = dispName.replace(/"/g, '&quot;').replace(/'/g, '&#39;');
                 var isActive = (currentChampName === cname);
                 var activeClass = isActive ? ' active' : '';
 
-                return '<div class="nav-champ-item' + activeClass + '" data-champion="' + nameEsc + '" title="' + nameEsc
+                return '<div class="nav-champ-item' + activeClass + '" data-champion="' + nameEsc + '" title="' + dispEsc
                     + '" onclick="onNavChampClick(\'' + nameEsc + '\')">'
-                    + '<img src="' + urls[0] + '" alt="' + nameEsc + '" data-urls="' + urlsJson + '" data-url-idx="0" onerror="handleImgError(this)" />'
-                    + '<div class="nav-champ-fallback" style="display:none;">' + cname.substring(0, 2) + '</div>'
-                    + '<div class="nav-champ-tooltip">' + cname + '</div>'
+                    + '<img src="' + urls[0] + '" alt="' + dispEsc + '" data-urls="' + urlsJson + '" data-url-idx="0" onerror="handleImgError(this)" />'
+                    + '<div class="nav-champ-fallback" style="display:none;">' + dispName.substring(0, 2) + '</div>'
+                    + '<div class="nav-champ-tooltip">' + dispName + '</div>'
                     + '</div>';
             }).join('');
         }
@@ -1758,7 +2121,7 @@
         }
 
         function onNavChampClick(champName) {
-            document.getElementById('champInput').value = champName;
+            document.getElementById('champInput').value = getChampDisplayName(champName);
             search(navLineFilter);
         }
 
@@ -1775,8 +2138,8 @@
         async function loadData() {
             showLoader(true);
             try {
-                // Cache Busting: champ.json 수정 시 ?v=1.1.0 버전을 변경하여 커밋하면 브라우저 캐시 무시됨
-                var res = await fetch('champ.json?v=1.1.0');
+                // Cache Busting: champ.json 수정 시 ?v=1.1.1 버전을 변경하여 커밋하면 브라우저 캐시 무시됨
+                var res = await fetch('champ.json?v=1.1.1');
                 if (!res.ok) throw new Error('HTTP ' + res.status);
                 var list = await res.json();
                 allChampionsList = list.slice().sort(function (a, b) {
@@ -1788,7 +2151,18 @@
                         if (alias) championDict[alias] = data;
                     });
                 });
-                renderNavSidebar();
+                initLang();
+
+                // URL Parameter auto-search for SEO landing pages (?champ=가렌, ?champ=Garen, ?q=가렌, ?c=Garen)
+                var params = new URLSearchParams(window.location.search);
+                var champQuery = params.get('champ') || params.get('c') || params.get('q');
+                if (champQuery) {
+                    var inputEl = document.getElementById('champInput');
+                    if (inputEl) {
+                        inputEl.value = champQuery;
+                        search();
+                    }
+                }
             } catch (e) {
                 showAlert('error', '오류: 데이터 파일(champ.json)을 불러올 수 없습니다. (' + e.message + ')');
             } finally {
@@ -2005,10 +2379,80 @@
         function searchChampions(query) {
             if (!query) return [];
             var rawQ = query.trim().toLowerCase();
-            var convQ = engToKor(query.trim()).toLowerCase();
-
+            var rawNoSpace = rawQ.replace(/\s+/g, '');
             var seen = {};
             var matches = [];
+
+            if (currentLang === 'zh') {
+                allChampionsList.forEach(function (data) {
+                    var cname = data.champion;
+                    if (seen[cname]) return;
+                    var zhName = (typeof CHAMP_ZH_MAP !== 'undefined' && CHAMP_ZH_MAP[cname]) ? CHAMP_ZH_MAP[cname] : cname;
+                    var enName = (typeof CHAMP_EN_MAP !== 'undefined' && CHAMP_EN_MAP[cname]) ? CHAMP_EN_MAP[cname] : '';
+                    var zhLow = zhName.toLowerCase();
+                    var zhNoSpace = zhLow.replace(/\s+/g, '');
+                    var enLow = enName.toLowerCase();
+                    var enNoSpace = enLow.replace(/\s+/g, '');
+
+                    var score = 999;
+                    if (zhLow === rawQ || zhNoSpace === rawNoSpace || (enLow && (enLow === rawQ || enNoSpace === rawNoSpace))) {
+                        score = 1;
+                    } else if (zhLow.indexOf(rawQ) === 0 || zhNoSpace.indexOf(rawNoSpace) === 0 || (enLow && (enLow.indexOf(rawQ) === 0 || enNoSpace.indexOf(rawNoSpace) === 0))) {
+                        score = 2;
+                    } else if (zhLow.indexOf(rawQ) !== -1 || zhNoSpace.indexOf(rawNoSpace) !== -1 || (enLow && (enLow.indexOf(rawQ) !== -1 || enNoSpace.indexOf(rawNoSpace) !== -1))) {
+                        score = 3;
+                    }
+
+                    if (score < 999) {
+                        seen[cname] = true;
+                        matches.push({ data: data, score: score, matchedAlias: null, displayName: zhName });
+                    }
+                });
+
+                matches.sort(function (a, b) {
+                    if (a.score !== b.score) return a.score - b.score;
+                    var zhA = getChampDisplayName(a.data.champion);
+                    var zhB = getChampDisplayName(b.data.champion);
+                    return zhA.localeCompare(zhB, 'zh-Hans-CN');
+                });
+
+                return matches;
+            }
+
+            if (currentLang === 'en') {
+                allChampionsList.forEach(function (data) {
+                    var cname = data.champion;
+                    if (seen[cname]) return;
+                    var enName = (typeof CHAMP_EN_MAP !== 'undefined' && CHAMP_EN_MAP[cname]) ? CHAMP_EN_MAP[cname] : cname;
+                    var enLow = enName.toLowerCase();
+                    var enNoSpace = enLow.replace(/\s+/g, '');
+                    var score = 999;
+
+                    if (enLow === rawQ || enNoSpace === rawNoSpace) {
+                        score = 1;
+                    } else if (enLow.indexOf(rawQ) === 0 || enNoSpace.indexOf(rawNoSpace) === 0) {
+                        score = 2;
+                    } else if (enLow.indexOf(rawQ) !== -1 || enNoSpace.indexOf(rawNoSpace) !== -1) {
+                        score = 3;
+                    }
+
+                    if (score < 999) {
+                        seen[cname] = true;
+                        matches.push({ data: data, score: score, matchedAlias: null, displayName: enName });
+                    }
+                });
+
+                matches.sort(function (a, b) {
+                    if (a.score !== b.score) return a.score - b.score;
+                    var enA = getChampDisplayName(a.data.champion);
+                    var enB = getChampDisplayName(b.data.champion);
+                    return enA.localeCompare(enB);
+                });
+
+                return matches;
+            }
+
+            var convQ = engToKor(query.trim()).toLowerCase();
 
             Object.keys(championDict).forEach(function (key) {
                 var data = championDict[key];
@@ -2025,7 +2469,6 @@
                     var name = allNames[i];
                     var nLow = name.toLowerCase();
                     var nNoSpace = nLow.replace(/\s+/g, '');
-                    var rawNoSpace = rawQ.replace(/\s+/g, '');
                     var convNoSpace = convQ.replace(/\s+/g, '');
 
                     var isAlias = (name !== cname);
@@ -2087,22 +2530,58 @@
             // 자동완성 창 닫기
             var acList = document.getElementById('autocompleteList');
             if (acList) { acList.classList.remove('open'); acList.innerHTML = ''; }
-            if (!query) { showAlert('warning', '챔피언 이름을 입력해주세요.'); return; }
-
-            var data = championDict[query];
-            if (!data) {
-                var conv = engToKor(query);
-                if (conv) data = championDict[conv];
+            if (!query) {
+                var warnMsg = (currentLang === 'zh') ? '请输入英雄名称。' : ((currentLang === 'en') ? 'Please enter a champion name.' : '챔피언 이름을 입력해주세요.');
+                showAlert('warning', warnMsg);
+                return;
             }
+
+            var data = null;
+            if (currentLang === 'zh') {
+                if (typeof ZH_TO_KO_MAP !== 'undefined') {
+                    var koName1 = ZH_TO_KO_MAP[query.toLowerCase()];
+                    if (koName1 && championDict[koName1]) {
+                        data = championDict[koName1];
+                    }
+                }
+                if (!data && typeof EN_TO_KO_MAP !== 'undefined') {
+                    var koName2 = EN_TO_KO_MAP[query.toLowerCase()];
+                    if (koName2 && championDict[koName2]) {
+                        data = championDict[koName2];
+                    }
+                }
+            } else if (currentLang === 'en') {
+                if (typeof EN_TO_KO_MAP !== 'undefined') {
+                    var koName = EN_TO_KO_MAP[query.toLowerCase()];
+                    if (koName && championDict[koName]) {
+                        data = championDict[koName];
+                    }
+                }
+            } else {
+                data = championDict[query];
+                if (!data) {
+                    var conv = engToKor(query);
+                    if (conv) data = championDict[conv];
+                }
+            }
+
             if (!data) {
                 var matches = searchChampions(query);
                 if (matches.length > 0) {
                     data = matches[0].data;
-                    document.getElementById('champInput').value = data.champion;
+                    document.getElementById('champInput').value = getChampDisplayName(data.champion);
                 }
             }
 
-            if (!data) { showAlert('error', "'" + query + "'에 대한 데이터를 찾을 수 없습니다. 챔피언 이름(별칭 포함)을 다시 확인해주세요."); return; }
+            if (!data) {
+                var errorMsg = (currentLang === 'zh')
+                    ? "未找到与 '" + query + "' 相关的英雄数据，请检查名称。"
+                    : ((currentLang === 'en')
+                        ? "Could not find data for '" + query + "'. Please check the champion name."
+                        : "'" + query + "'에 대한 데이터를 찾을 수 없습니다. 챔피언 이름(별칭 포함)을 다시 확인해주세요.");
+                showAlert('error', errorMsg);
+                return;
+            }
             renderResults(data, preferredLine);
         }
 
@@ -2114,6 +2593,16 @@
         function renderResults(data, preferredLine) {
             currentChampData = data;
             var champName = data.champion || '';
+
+            var dispChamp = getChampDisplayName(champName);
+            if (currentLang === 'zh') {
+                document.title = dispChamp + ' 克制指南 - LOL Counter';
+            } else if (currentLang === 'en') {
+                document.title = dispChamp + ' Counter Guide - LOL Counter';
+            } else {
+                document.title = dispChamp + ' 카운터 상성 정리 - LOL Counter';
+            }
+
             var thumbImg = document.getElementById('champThumbImg');
             var thumbFb = document.getElementById('champThumbFallback');
             thumbFb.style.display = 'none';
@@ -2133,8 +2622,9 @@
             document.getElementById('results-section').classList.add('show');
             document.getElementById('results-section').scrollIntoView({ behavior: 'smooth', block: 'start' });
 
-            // 조회 후 테마 토글 숨김
-            document.getElementById('themeToggleWrap').style.display = 'none';
+            // 조회 후 토글 숨김
+            var headerToggles = document.getElementById('headerTogglesWrap');
+            if (headerToggles) headerToggles.style.display = 'none';
         }
 
         /* ── 포지션 라인 뱃지 아이콘 ── */
@@ -2159,21 +2649,22 @@
         };
 
         function getLineTagInfo(rawName) {
-            if (!rawName) return { rawName: '', cleanName: '', lineTag: '', lineTags: [], iconUrl: '' };
+            if (!rawName) return { rawName: '', cleanKoreanName: '', cleanName: '', lineTag: '', lineTags: [], iconUrl: '' };
             if (typeof rawName === 'object' && rawName !== null) {
                 rawName = rawName.name || '';
             }
-            var cleanName = stripParenSuffix(rawName);
+            var cleanKoreanName = stripParenSuffix(rawName);
+            var cleanName = getChampDisplayName(cleanKoreanName);
             var match = rawName.match(/\((.*?)\)/);
             if (match) {
-                var lineTag = match[1].trim();
-                // 괄호 안에 여러 라인이 쉼표/슬래시 등으로 적혀있는 경우 분리 (예: "정글, 서폿" -> ["정글", "서폿"])
-                var lineTags = lineTag.split(/[,/]/).map(function (s) { return s.trim(); }).filter(Boolean);
-                var primaryTag = lineTags[0] || lineTag;
+                var rawLineTag = match[1].trim();
+                var lineTags = rawLineTag.split(/[,/]/).map(function (s) { return s.trim(); }).filter(Boolean);
+                var primaryTag = lineTags[0] || rawLineTag;
                 var iconUrl = LINE_ICON_MAP[primaryTag] || '';
-                return { rawName: rawName, cleanName: cleanName, lineTag: lineTag, lineTags: lineTags, iconUrl: iconUrl };
+                var lineTag = lineTags.map(function (t) { return getLineDisplayName(t); }).join(', ');
+                return { rawName: rawName, cleanKoreanName: cleanKoreanName, cleanName: cleanName, lineTag: lineTag, lineTags: lineTags, iconUrl: iconUrl };
             }
-            return { rawName: rawName, cleanName: cleanName, lineTag: '', lineTags: [], iconUrl: '' };
+            return { rawName: rawName, cleanKoreanName: cleanKoreanName, cleanName: cleanName, lineTag: '', lineTags: [], iconUrl: '' };
         }
 
         /* ── 라인 필터 칩 렌더링 & 이벤트 ── */
@@ -2204,22 +2695,25 @@
             if (lines.length === 1) {
                 activeLineFilter = lines[0];
                 var line = lines[0];
+                var dispLine = getLineDisplayName(line);
                 var iconUrl = LINE_ICON_MAP[line] || POSITION_ICONS.all;
-                html += '<button class="line-chip-btn active" data-line="' + line + '" title="' + line + '" onclick="onLineChipClick(this)">'
-                    + '<img src="' + iconUrl + '" alt="' + line + '" />'
+                html += '<button class="line-chip-btn active" data-line="' + line + '" title="' + dispLine + '" onclick="onLineChipClick(this)">'
+                    + '<img src="' + iconUrl + '" alt="' + dispLine + '" />'
                     + '</button>';
             } else {
                 activeLineFilter = defaultLine;
+                var dispAll = getLineDisplayName('전체');
                 // 1) 전체 칩
-                html += '<button class="line-chip-btn' + (activeLineFilter === '전체' ? ' active' : '') + '" data-line="전체" title="전체" onclick="onLineChipClick(this)">'
-                    + '<img src="' + POSITION_ICONS.all + '" alt="전체" />'
+                html += '<button class="line-chip-btn' + (activeLineFilter === '전체' ? ' active' : '') + '" data-line="전체" title="' + dispAll + '" onclick="onLineChipClick(this)">'
+                    + '<img src="' + POSITION_ICONS.all + '" alt="' + dispAll + '" />'
                     + '</button>';
-                // 2) 각 라인 칩 (선택된/첫 번째 라인이 기본 선택됨)
+                // 2) 각 라인 칩
                 lines.forEach(function (line) {
+                    var dispLine = getLineDisplayName(line);
                     var iconUrl = LINE_ICON_MAP[line] || POSITION_ICONS.all;
                     var isActive = (line === activeLineFilter);
-                    html += '<button class="line-chip-btn' + (isActive ? ' active' : '') + '" data-line="' + line + '" title="' + line + '" onclick="onLineChipClick(this)">'
-                        + '<img src="' + iconUrl + '" alt="' + line + '" />'
+                    html += '<button class="line-chip-btn' + (isActive ? ' active' : '') + '" data-line="' + line + '" title="' + dispLine + '" onclick="onLineChipClick(this)">'
+                        + '<img src="' + iconUrl + '" alt="' + dispLine + '" />'
                         + '</button>';
                 });
             }
@@ -2246,7 +2740,6 @@
                 return countersList;
             }
 
-            // 단일 라인 챔피언(lines가 1개)인 경우, 타 라인 카운터도 모두 보여주어야 하므로 걸러내지 않음!
             if (currentChampData && currentChampData.lines && currentChampData.lines.length === 1) {
                 return countersList;
             }
@@ -2256,12 +2749,10 @@
                 var parsed = getLineTagInfo(rawName);
                 var tags = parsed.lineTags || [];
 
-                // 괄호 태그가 없거나 '기타'인 경우 항상 표시
                 if (!tags.length || tags.indexOf('기타') !== -1) {
                     return true;
                 }
 
-                // 바텀 (원딜 ↔ 서폿) 연동 규칙
                 var isBotFilter = (selectedLine === '원딜' || selectedLine === '바텀' || selectedLine === '서폿' || selectedLine === '서포터');
 
                 for (var i = 0; i < tags.length; i++) {
@@ -2290,7 +2781,6 @@
             var parsed = getLineTagInfo(rawName);
             if (!parsed.iconUrl) return false;
 
-            // '전체' 선택 시에는 괄호 라인 태그가 있는 모든 카운터에 아이콘 노출
             if (!activeLine || activeLine === '전체') {
                 return true;
             }
@@ -2300,10 +2790,8 @@
                 return false;
             }
 
-            // 바텀 연동 체크 (원딜 ↔ 서폿)
             var isBotActive = (activeLine === '원딜' || activeLine === '바텀' || activeLine === '서폿' || activeLine === '서포터');
 
-            // 카운터 라인이 현재 메인 라인(또는 바텀 그룹)에 속하는지 체크
             var isPrimary = tags.some(function (tag) {
                 if (isBotActive) {
                     return tag === '원딜' || tag === '바텀' || tag === '서폿' || tag === '서포터';
@@ -2311,7 +2799,6 @@
                 return tag === activeLine;
             });
 
-            // 메인 라인이면 아이콘 숨김(false), 타 라인 카운터면 아이콘 노출(true)
             return !isPrimary;
         }
 
@@ -2324,7 +2811,6 @@
             renderHardCounters(filteredHc);
             renderGeneralCounters(filteredGc);
 
-            // 바텀 라인 관련(전체, 원딜, 서폿, 바텀)일 때만 추천 카운터 조합 섹션 노출
             var isBotOrAll = (!activeLineFilter || activeLineFilter === '전체' || activeLineFilter === '원딜' || activeLineFilter === '서폿' || activeLineFilter === '바텀' || activeLineFilter === '서포터');
             if (isBotOrAll) {
                 renderCombos(currentChampData.combo_counters || []);
@@ -2344,19 +2830,22 @@
                 var reason = (typeof c === 'object' && c !== null && c.reason) ? c.reason : '';
                 var parsed = getLineTagInfo(rawName);
                 var nameEsc = parsed.cleanName.replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+                var koNameEsc = parsed.cleanKoreanName.replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/'/g, '&#39;');
                 var reasonEsc = reason.replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/'/g, '&#39;');
-                var imgEl = makeImgEl(parsed.cleanName, 'hc-img', 'hc-fallback', parsed.cleanName.substring(0, 3));
+                var imgEl = makeImgEl(parsed.cleanKoreanName, 'hc-img', 'hc-fallback', parsed.cleanName.substring(0, 3));
                 var showBadge = shouldShowCardBadge(rawName, activeLineFilter);
                 var badgeHtml = (showBadge && parsed.iconUrl) ? '<img src="' + parsed.iconUrl + '" class="line-badge" alt="' + parsed.lineTag + '" title="' + parsed.lineTag + '" />' : '';
-                return '<div class="hc-card" data-name="' + nameEsc + '" data-reason="' + reasonEsc
-                    + '" onclick="onHcCardClick(this)" onmouseenter="showSyHover(this)" onmouseleave="hideSyHover()"'
-                    + ' tabindex="0" role="button" aria-label="' + nameEsc + ' 카운터 설명 보기">'
+                var cursorStyle = (currentLang !== 'ko') ? ' style="cursor:default;"' : '';
+                return '<div class="hc-card" data-name="' + nameEsc + '" data-ko-name="' + koNameEsc + '" data-reason="' + reasonEsc + '"' + cursorStyle
+                    + ' onclick="onHcCardClick(this)" onmouseenter="showSyHover(this)" onmouseleave="hideSyHover()"'
+                    + ' tabindex="0" role="button" aria-label="' + nameEsc + '">'
                     + '<div class="card-img-wrap">' + imgEl + badgeHtml + '</div>'
                     + '<div class="hc-label">' + parsed.cleanName + '</div></div>';
             }).join('');
         }
 
         function onHcCardClick(card) {
+            if (currentLang !== 'ko') return; // 영문/중국어 모드에서는 클릭 상세 설명 비활성화
             var name = card.getAttribute('data-name');
             var reason = card.getAttribute('data-reason');
             if (activeHcCard === card) {
@@ -2369,6 +2858,7 @@
         }
 
         function showInfoPanel(name, reason) {
+            if (currentLang !== 'ko') return;
             var hint = document.getElementById('hcHint');
             var panel = document.getElementById('hcInfoPanel');
             hint.style.display = 'none';
@@ -2380,7 +2870,12 @@
         }
 
         function resetInfoPanel() {
-            document.getElementById('hcHint').style.display = 'block';
+            var hcHint = document.getElementById('hcHint');
+            if (currentLang !== 'ko') {
+                hcHint.style.display = 'none';
+            } else {
+                hcHint.style.display = 'block';
+            }
             document.getElementById('hcInfoPanel').classList.remove('visible');
             document.getElementById('hcInfoName').textContent = '';
             document.getElementById('hcInfoReason').textContent = '';
@@ -2389,28 +2884,33 @@
 
         function renderGeneralCounters(counters) {
             var grid = document.getElementById('generalCounterGrid');
-            if (!counters.length) { grid.innerHTML = '<p style="color:var(--text-secondary);font-size:13px;">해당 라인 카운터 정보 없음</p>'; return; }
+            if (!counters.length) {
+                var noDataMsg = (currentLang === 'zh') ? '该分路暂无克制信息' : ((currentLang === 'en') ? 'No counter information for this line' : '해당 라인 카운터 정보 없음');
+                grid.innerHTML = '<p style="color:var(--text-secondary);font-size:13px;">' + noDataMsg + '</p>';
+                return;
+            }
             grid.innerHTML = counters.map(function (c) {
                 var rawName = (typeof c === 'string') ? c : (c && c.name ? c.name : 'N/A');
                 var reason = (typeof c === 'object' && c !== null && c.reason) ? c.reason : '';
                 var parsed = getLineTagInfo(rawName);
-                var imgEl = makeImgEl(parsed.cleanName, 'gc-img', 'gc-fallback', parsed.cleanName.substring(0, 3));
+                var imgEl = makeImgEl(parsed.cleanKoreanName, 'gc-img', 'gc-fallback', parsed.cleanName.substring(0, 3));
                 var showBadge = shouldShowCardBadge(rawName, activeLineFilter);
                 var badgeHtml = (showBadge && parsed.iconUrl) ? '<img src="' + parsed.iconUrl + '" class="line-badge" alt="' + parsed.lineTag + '" title="' + parsed.lineTag + '" />' : '';
                 var cleanEsc = parsed.cleanName.replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+                var koNameEsc = parsed.cleanKoreanName.replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/'/g, '&#39;');
                 var reasonEsc = reason.replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/'/g, '&#39;');
 
-                var hasReason = Boolean(reason);
+                var hasReason = Boolean(reason) && (currentLang === 'ko');
                 var reasonBadge = hasReason ? '<div class="reason-badge" title="상세 설명 보기">📝</div>' : '';
                 var clickAttrs = hasReason
-                    ? ' data-name="' + cleanEsc + '" data-reason="' + reasonEsc + '" onclick="onHcCardClick(this)" tabindex="0" role="button" aria-label="' + cleanEsc + ' 카운터 설명 보기"'
-                    : ' data-name="' + cleanEsc + '"';
+                    ? ' data-name="' + cleanEsc + '" data-ko-name="' + koNameEsc + '" data-reason="' + reasonEsc + '" onclick="onHcCardClick(this)" tabindex="0" role="button" aria-label="' + cleanEsc + ' 카운터 설명 보기"'
+                    : ' data-name="' + cleanEsc + '" data-ko-name="' + koNameEsc + '"';
                 var extraClass = hasReason ? ' has-reason' : '';
 
                 return '<div class="gc-item' + extraClass + '" onmouseenter="showSyHover(this)" onmouseleave="hideSyHover()"'
                     + clickAttrs + '>'
                     + '<div class="card-img-wrap">' + imgEl + badgeHtml + reasonBadge + '</div>'
-                    + '<div class="gc-name">' + parsed.cleanName + '</div><div class="gc-tooltip">' + parsed.cleanName + '</div></div>';
+                    + '<div class="gc-name">' + parsed.cleanName + '</div></div>';
             }).join('');
         }
 
@@ -2422,10 +2922,12 @@
                 var parts = combo.split('&').map(function (p) { return p.trim(); });
                 if (parts.length !== 2) return '';
                 var left = parts[0], right = parts[1];
-                var leftImg = makeImgEl(left, 'cc-img', 'cc-fallback', left.substring(0, 2));
-                var rightImg = makeImgEl(right, 'cc-img', 'cc-fallback', right.substring(0, 2));
+                var leftDisp = getChampDisplayName(left);
+                var rightDisp = getChampDisplayName(right);
+                var leftImg = makeImgEl(left, 'cc-img', 'cc-fallback', leftDisp.substring(0, 2));
+                var rightImg = makeImgEl(right, 'cc-img', 'cc-fallback', rightDisp.substring(0, 2));
                 return '<div class="cc-card"><div class="cc-imgs">' + leftImg + '<span class="cc-plus">+</span>' + rightImg + '</div>'
-                    + '<div class="cc-label">' + left + ' &amp; ' + right + '</div></div>';
+                    + '<div class="cc-label">' + leftDisp + ' &amp; ' + rightDisp + '</div></div>';
             }).filter(Boolean).join('');
             grid.innerHTML = cards;
             section.style.display = 'block';
@@ -2439,60 +2941,78 @@
                 panel.classList.remove('show');
                 return;
             }
-            title.textContent = '🤝 ' + champName + josaWaGwa(champName) + ' 어울리는 챔피언';
+            var dispChamp = getChampDisplayName(champName);
+            var synergyTitleText = (currentLang === 'zh')
+                ? '🤝 与 ' + dispChamp + ' 最佳配合英雄'
+                : ((currentLang === 'en')
+                    ? '🤝 Best Synergy with ' + dispChamp
+                    : '🤝 ' + champName + josaWaGwa(champName) + ' 어울리는 챔피언');
+            title.textContent = synergyTitleText;
             grid.innerHTML = synergies.map(function (name) {
+                var dispName = getChampDisplayName(name);
                 var urls = buildUrls(name);
                 var urlsJson = JSON.stringify(urls).replace(/"/g, '&quot;');
-                var safe = name.replace(/&/g, '&amp;').replace(/"/g, '&quot;');
+                var safe = dispName.replace(/&/g, '&amp;').replace(/"/g, '&quot;');
                 return '<img src="' + urls[0] + '" class="sy-img" alt="' + safe
                     + '" title="' + safe + '" data-urls="' + urlsJson
                     + '" data-url-idx="0" onerror="handleImgError(this)" />'
-                    + '<div class="sy-fallback" style="display:none;" title="' + safe + '">' + name.substring(0, 2) + '</div>';
+                    + '<div class="sy-fallback" style="display:none;" title="' + safe + '">' + dispName.substring(0, 2) + '</div>';
             }).join('');
             panel.classList.add('show');
         }
 
         /* ── 시너지 hover 팝업 ── */
-        var syHoverCache = {}; // 챔피언별 시너지 HTML 캐시 (반복 네트워크 요청 방지)
+        var syHoverCache = {};
 
         function showSyHover(el) {
-            var name = el.getAttribute('data-name');
-            if (!name) return;
+            var koName = el.getAttribute('data-ko-name') || el.getAttribute('data-name');
+            if (!koName) return;
+            var baseKoName = stripParenSuffix(koName);
 
+            var dispName = (currentLang !== 'ko') ? getChampDisplayName(baseKoName) : baseKoName;
             var panel = document.getElementById('syHoverPanel');
 
-            // ① 캐시에 없을 때만 HTML 생성
-            if (!syHoverCache[name]) {
-                var data = championDict[name];
-                if (!data) {
-                    var base = stripParenSuffix(name);
-                    data = championDict[base];
-                }
-                var synergies = data ? (data.synergy || []) : [];
+            var data = championDict[baseKoName];
+            if (!data) {
+                data = championDict[koName];
+            }
+            var synergies = data ? (data.synergy || []) : [];
+
+            var cacheKey = baseKoName + '_' + currentLang;
+
+            if (!syHoverCache[cacheKey]) {
                 if (!synergies.length) {
-                    syHoverCache[name] = '__empty__';
+                    syHoverCache[cacheKey] = '__empty__';
                 } else {
-                    syHoverCache[name] = synergies.map(function (sname) {
+                    syHoverCache[cacheKey] = synergies.map(function (sname) {
+                        var dispSname = getChampDisplayName(sname);
                         var urls = buildUrls(sname);
                         var urlsJson = JSON.stringify(urls).replace(/"/g, '&quot;');
-                        var safe = sname.replace(/&/g, '&amp;').replace(/"/g, '&quot;');
+                        var safe = dispSname.replace(/&/g, '&amp;').replace(/"/g, '&quot;');
                         return '<img src="' + urls[0] + '" class="sy-img" alt="' + safe
                             + '" title="' + safe + '" data-urls="' + urlsJson
                             + '" data-url-idx="0" onerror="handleImgError(this)" />'
-                            + '<div class="sy-fallback" style="display:none;">' + sname.substring(0, 2) + '</div>';
+                            + '<div class="sy-fallback" style="display:none;">' + dispSname.substring(0, 2) + '</div>';
                     }).join('');
                 }
             }
 
-            // ② 시너지 없으면 팝업 숨김
-            if (syHoverCache[name] === '__empty__') { hideSyHover(); return; }
-
-            // ③ 캐시된 HTML 재사용 (이미지 재요청 없음)
-            document.getElementById('syHoverTitle').textContent = '🤝 ' + name + josaWaGwa(name) + ' 어울리는 챔피언';
-            document.getElementById('syHoverGrid').innerHTML = syHoverCache[name];
+            if (synergies.length > 0) {
+                var titleText = (currentLang === 'zh')
+                    ? '🤝 与 ' + dispName + ' 最佳配合英雄'
+                    : ((currentLang === 'en')
+                        ? '🤝 Best Synergy with ' + dispName
+                        : '🤝 ' + baseKoName + josaWaGwa(baseKoName) + ' 어울리는 챔피언');
+                document.getElementById('syHoverTitle').textContent = titleText;
+                document.getElementById('syHoverGrid').innerHTML = syHoverCache[cacheKey];
+                document.getElementById('syHoverGrid').style.display = 'flex';
+            } else {
+                document.getElementById('syHoverTitle').textContent = dispName;
+                document.getElementById('syHoverGrid').innerHTML = '';
+                document.getElementById('syHoverGrid').style.display = 'none';
+            }
 
             var rect = el.getBoundingClientRect();
-            // html { zoom: 0.9 } 보정: 뷰포트 픽셀 → fixed CSS 픽셀 변환
             var zoom = parseFloat(getComputedStyle(document.documentElement).zoom) || 1;
             panel.style.top = 'auto';
             panel.style.left = 'auto';
@@ -2524,8 +3044,9 @@
             document.getElementById('synergyGrid').innerHTML = '';
             resetInfoPanel();
 
-            // 결과 초기화 시 테마 토글 다시 표시
-            document.getElementById('themeToggleWrap').style.display = '';
+            // 결과 초기화 시 언어/테마 토글 다시 표시
+            var headerToggles = document.getElementById('headerTogglesWrap');
+            if (headerToggles) headerToggles.style.display = '';
         }
 
         function clearAlerts() {
@@ -2600,13 +3121,14 @@
 
                 list.innerHTML = results.map(function (r, i) {
                     var cname = r.data.champion;
+                    var dispName = (currentLang !== 'ko') ? (r.displayName || getChampDisplayName(cname)) : cname;
                     var urls = buildUrls(cname);
                     var urlsJson = JSON.stringify(urls).replace(/"/g, '&quot;');
-                    return '<div class="ac-item" data-champion="' + cname.replace(/"/g, '&quot;') + '" data-idx="' + i + '">'
-                        + '<img class="ac-thumb" src="' + urls[0] + '" alt="' + cname
+                    return '<div class="ac-item" data-champion="' + cname.replace(/"/g, '&quot;') + '" data-display="' + dispName.replace(/"/g, '&quot;') + '" data-idx="' + i + '">'
+                        + '<img class="ac-thumb" src="' + urls[0] + '" alt="' + dispName
                         + '" data-urls="' + urlsJson + '" data-url-idx="0" onerror="handleImgError(this)" />'
-                        + '<div class="ac-thumb-fb">' + cname.substring(0, 2) + '</div>'
-                        + '<div><span class="ac-name">' + highlight(cname, rawQ, convQ) + '</span></div>'
+                        + '<div class="ac-thumb-fb">' + dispName.substring(0, 2) + '</div>'
+                        + '<div><span class="ac-name">' + highlight(dispName, rawQ, convQ) + '</span></div>'
                         + '</div>';
                 }).join('');
 
@@ -2617,7 +3139,8 @@
                 list.querySelectorAll('.ac-item').forEach(function (el) {
                     el.addEventListener('mousedown', function (e) {
                         e.preventDefault();  // blur 방지
-                        input.value = el.getAttribute('data-champion');
+                        var targetVal = el.getAttribute('data-display') || el.getAttribute('data-champion');
+                        input.value = targetVal;
                         closeList();
                         search();
                     });
@@ -2644,7 +3167,8 @@
                     setActive(items, acIdx);
                 } else if (e.key === 'Enter') {
                     if (acIdx >= 0 && items[acIdx]) {
-                        input.value = items[acIdx].getAttribute('data-champion');
+                        var targetVal = items[acIdx].getAttribute('data-display') || items[acIdx].getAttribute('data-champion');
+                        input.value = targetVal;
                         closeList();
                     }
                     search();
