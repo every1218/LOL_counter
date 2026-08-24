@@ -122,6 +122,8 @@
         html,
         body {
             min-height: 100vh;
+            display: flex;
+            flex-direction: column;
             background: var(--bg-main);
             color: var(--text-primary);
             font-family: 'Outfit', 'Noto Sans KR', sans-serif;
@@ -131,9 +133,11 @@
 
         /* ── 페이지 레이아웃 ── */
         .page-wrapper {
+            flex: 1 0 auto;
+            width: 100%;
             max-width: 900px;
             margin: 0 auto;
-            padding: 2rem 1.25rem 4rem;
+            padding: 2rem 1.25rem 2rem;
         }
 
 
@@ -1669,6 +1673,57 @@
                 display: none !important;
             }
         }
+
+        /* ── 슬림 푸터 + 정적 면책고지 카드 ── */
+        .site-footer {
+            flex-shrink: 0;
+            width: 100%;
+            padding: 14px 16px 24px;
+            text-align: center;
+            color: var(--text-muted);
+            font-size: 11px;
+            background: transparent;
+            margin-top: auto;
+        }
+
+        .footer-slim-row {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .footer-slim-row a {
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-size: 11px;
+            font-weight: 500;
+            transition: var(--transition);
+        }
+
+        .footer-slim-row a:hover {
+            color: var(--accent-red);
+            text-decoration: underline;
+        }
+
+        .footer-sep {
+            color: var(--text-muted);
+            opacity: 0.35;
+        }
+
+        .disclaimer-text {
+            max-width: 750px;
+            margin: 10px auto 0;
+            font-size: 10px;
+            color: var(--text-muted);
+            line-height: 1.5;
+            background: var(--bg-card);
+            padding: 8px 16px;
+            border-radius: 8px;
+            border: 1px solid var(--border-subtle);
+            opacity: 0.85;
+        }
     </style>
 </head>
 
@@ -1817,8 +1872,22 @@
                 <div class="hc-info-reason" id="hcInfoReason"></div>
             </div>
         </section>
-
     </div>
+
+    <!-- 미니멀 1줄 링크 + 정적 면책고지 카드 푸터 -->
+    <footer class="site-footer">
+        <div class="footer-slim-row">
+            <a href="privacy.html" target="_blank" rel="noopener">개인정보처리방침 (Privacy Policy)</a>
+            <span class="footer-sep">|</span>
+            <a href="about.html" target="_blank" rel="noopener">서비스 소개 & 문의 (About Us)</a>
+            <span class="footer-sep">|</span>
+            <span>© 2026 vschamp.lol</span>
+        </div>
+        <div class="disclaimer-text">
+            vschamp.lol isn't endorsed by Riot Games and doesn't reflect the views or opinions of Riot Games or anyone
+            officially involved in producing or managing League of Legends. League of Legends © Riot Games, Inc.
+        </div>
+    </footer>
 
     <!-- 시너지 hover 팝업 (fixed) -->
     <div id="syHoverPanel" class="sy-hover-panel">
@@ -2138,8 +2207,8 @@
         async function loadData() {
             showLoader(true);
             try {
-                // Cache Busting: champ.json 수정 시 ?v=1.1.1 버전을 변경하여 커밋하면 브라우저 캐시 무시됨
-                var res = await fetch('champ.json?v=1.1.1');
+                // Cache Busting: champ.json 수정 시 ?v=1.1.2 버전을 변경하여 커밋하면 브라우저 캐시 무시됨
+                var res = await fetch('champ.json?v=1.1.2');
                 if (!res.ok) throw new Error('HTTP ' + res.status);
                 var list = await res.json();
                 allChampionsList = list.slice().sort(function (a, b) {
@@ -2622,9 +2691,11 @@
             document.getElementById('results-section').classList.add('show');
             document.getElementById('results-section').scrollIntoView({ behavior: 'smooth', block: 'start' });
 
-            // 조회 후 토글 숨김
+            // 조회 후 토글 및 푸터 숨김
             var headerToggles = document.getElementById('headerTogglesWrap');
             if (headerToggles) headerToggles.style.display = 'none';
+            var footer = document.querySelector('.site-footer');
+            if (footer) footer.style.display = 'none';
         }
 
         /* ── 포지션 라인 뱃지 아이콘 ── */
@@ -3044,9 +3115,11 @@
             document.getElementById('synergyGrid').innerHTML = '';
             resetInfoPanel();
 
-            // 결과 초기화 시 언어/테마 토글 다시 표시
+            // 결과 초기화 시 언어/테마 토글 및 푸터 다시 표시
             var headerToggles = document.getElementById('headerTogglesWrap');
             if (headerToggles) headerToggles.style.display = '';
+            var footer = document.querySelector('.site-footer');
+            if (footer) footer.style.display = '';
         }
 
         function clearAlerts() {
