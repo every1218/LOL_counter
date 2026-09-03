@@ -18,9 +18,7 @@
         gtag('config', 'G-66DBCD4D0R');
     </script>
 
-    <!-- Google AdSense -->
-    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6088994578141254"
-        crossorigin="anonymous"></script>
+
 
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>롤 챔피언 상성 정리 | LOL Counter</title>
@@ -928,6 +926,7 @@
             font-weight: 700;
             color: var(--accent-red);
             margin-bottom: 8px;
+            transition: opacity 0.12s ease;
         }
 
         .hc-info-reason {
@@ -936,6 +935,7 @@
             line-height: 1.8;
             font-family: 'Noto Sans KR', sans-serif;
             font-weight: 300;
+            transition: opacity 0.12s ease;
         }
 
         [data-theme="light"] .hc-info-reason {
@@ -1664,57 +1664,6 @@
                 display: none !important;
             }
         }
-
-        /* ── 슬림 푸터 + 정적 면책고지 카드 ── */
-        .site-footer {
-            flex-shrink: 0;
-            width: 100%;
-            padding: 14px 16px 24px;
-            text-align: center;
-            color: var(--text-muted);
-            font-size: 11px;
-            background: transparent;
-            margin-top: auto;
-        }
-
-        .footer-slim-row {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-            flex-wrap: wrap;
-        }
-
-        .footer-slim-row a {
-            color: var(--text-secondary);
-            text-decoration: none;
-            font-size: 11px;
-            font-weight: 500;
-            transition: var(--transition);
-        }
-
-        .footer-slim-row a:hover {
-            color: var(--accent-red);
-            text-decoration: underline;
-        }
-
-        .footer-sep {
-            color: var(--text-muted);
-            opacity: 0.35;
-        }
-
-        .disclaimer-text {
-            max-width: 750px;
-            margin: 10px auto 0;
-            font-size: 10px;
-            color: var(--text-muted);
-            line-height: 1.5;
-            background: var(--bg-card);
-            padding: 8px 16px;
-            border-radius: 8px;
-            border: 1px solid var(--border-subtle);
-            opacity: 0.85;
-        }
     </style>
 </head>
 
@@ -1857,7 +1806,7 @@
                 <div class="cc-grid" id="comboGrid"></div>
             </div>
             <hr class="section-divider" />
-            <div class="hc-hint" id="hcHint">💡 하드 카운터 항목을 클릭하면 상세 설명이 표시됩니다.</div>
+            <div class="hc-hint" id="hcHint">💡 카운터 항목을 클릭하면 상세 설명이 표시됩니다.</div>
             <div class="hc-info-panel" id="hcInfoPanel">
                 <div class="hc-info-name" id="hcInfoName"></div>
                 <div class="hc-info-reason" id="hcInfoReason"></div>
@@ -1865,20 +1814,7 @@
         </section>
     </div>
 
-    <!-- 미니멀 1줄 링크 + 정적 면책고지 카드 푸터 -->
-    <footer class="site-footer">
-        <div class="footer-slim-row">
-            <a href="privacy.html" target="_blank" rel="noopener">개인정보처리방침 (Privacy Policy)</a>
-            <span class="footer-sep">|</span>
-            <a href="about.html" target="_blank" rel="noopener">서비스 소개 & 문의 (About Us)</a>
-            <span class="footer-sep">|</span>
-            <span>© 2026 vschamp.lol</span>
-        </div>
-        <div class="disclaimer-text">
-            vschamp.lol isn't endorsed by Riot Games and doesn't reflect the views or opinions of Riot Games or anyone
-            officially involved in producing or managing League of Legends. League of Legends © Riot Games, Inc.
-        </div>
-    </footer>
+
 
     <!-- 시너지 hover 팝업 (fixed) -->
     <div id="syHoverPanel" class="sy-hover-panel">
@@ -2033,7 +1969,7 @@
 
             var hcHint = document.getElementById('hcHint');
             if (hcHint) {
-                hcHint.textContent = isNonKo ? '' : '💡 하드 카운터 항목을 클릭하면 상세 설명이 표시됩니다.';
+                hcHint.textContent = isNonKo ? '' : '💡 카운터 항목을 클릭하면 상세 설명이 표시됩니다.';
                 if (isNonKo) hcHint.style.display = 'none';
                 else if (!activeHcCard) hcHint.style.display = 'block';
             }
@@ -2198,7 +2134,7 @@
         async function loadData() {
             showLoader(true);
             try {
-                var res = await fetch('champ.json?v=1.1.6');
+                var res = await fetch('champ.json?v=1.1.7');
                 if (!res.ok) throw new Error('HTTP ' + res.status);
                 var list = await res.json();
                 allChampionsList = list.slice().sort(function (a, b) {
@@ -2681,11 +2617,9 @@
             document.getElementById('results-section').classList.add('show');
             document.getElementById('results-section').scrollIntoView({ behavior: 'smooth', block: 'start' });
 
-            // 조회 후 토글 및 푸터 숨김
+            // 조회 후 토글 숨김
             var headerToggles = document.getElementById('headerTogglesWrap');
             if (headerToggles) headerToggles.style.display = 'none';
-            var footer = document.querySelector('.site-footer');
-            if (footer) footer.style.display = 'none';
         }
 
         /* ── 포지션 라인 뱃지 아이콘 ── */
@@ -2918,16 +2852,43 @@
             showInfoPanel(name, reason);
         }
 
+        function ensurePanelInView(panel) {
+            if (!panel) return;
+            var rect = panel.getBoundingClientRect();
+            var windowHeight = window.innerHeight || document.documentElement.clientHeight;
+            // 설명 패널 하단이 화면 아래로 벗어나거나, 상단이 위로 들어간 경우에만 시야에 부드럽게 맞춰줌
+            if (rect.bottom > windowHeight || rect.top < 0) {
+                panel.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+            }
+        }
+
         function showInfoPanel(name, reason) {
             if (currentLang !== 'ko') return;
             var hint = document.getElementById('hcHint');
             var panel = document.getElementById('hcInfoPanel');
+            var nameEl = document.getElementById('hcInfoName');
+            var reasonEl = document.getElementById('hcInfoReason');
             hint.style.display = 'none';
-            document.getElementById('hcInfoName').textContent = name;
-            document.getElementById('hcInfoReason').textContent = reason;
-            panel.classList.remove('visible');
-            void panel.offsetWidth;
-            panel.classList.add('visible');
+
+            if (panel.classList.contains('visible')) {
+                // 이미 패널이 열려 있는 경우: 패널을 끄지 않고 텍스트만 스무스하게 변경하여 스크롤 튐 완전 방지
+                nameEl.style.opacity = '0';
+                reasonEl.style.opacity = '0';
+                setTimeout(function () {
+                    nameEl.textContent = name;
+                    reasonEl.textContent = reason;
+                    nameEl.style.opacity = '1';
+                    reasonEl.style.opacity = '1';
+                    ensurePanelInView(panel);
+                }, 100);
+            } else {
+                nameEl.textContent = name;
+                reasonEl.textContent = reason;
+                nameEl.style.opacity = '1';
+                reasonEl.style.opacity = '1';
+                panel.classList.add('visible');
+                ensurePanelInView(panel);
+            }
         }
 
         function resetInfoPanel() {
@@ -3105,11 +3066,9 @@
             document.getElementById('synergyGrid').innerHTML = '';
             resetInfoPanel();
 
-            // 결과 초기화 시 언어/테마 토글 및 푸터 다시 표시
+            // 결과 초기화 시 언어/테마 토글 다시 표시
             var headerToggles = document.getElementById('headerTogglesWrap');
             if (headerToggles) headerToggles.style.display = '';
-            var footer = document.querySelector('.site-footer');
-            if (footer) footer.style.display = '';
         }
 
         function clearAlerts() {
