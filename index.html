@@ -2134,7 +2134,7 @@
         async function loadData() {
             showLoader(true);
             try {
-                var res = await fetch('champ.json?v=1.1.9');
+                var res = await fetch('champ.json?v=1.2.0');
                 if (!res.ok) throw new Error('HTTP ' + res.status);
                 var list = await res.json();
                 allChampionsList = list.slice().sort(function (a, b) {
